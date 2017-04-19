@@ -112,7 +112,7 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								uri: naicsUri
 							}, function(error, response, naicscodes) {
 								//console.log(naicscodes);
-								var businessDescription = "";
+								var businessDescription = "Contractor";
 								var naicscode = "";
 								if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"]) != "undefined"){
 									if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"]!= "undefined")){
@@ -131,10 +131,10 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								businessCity = businessCity.charAt(0).toUpperCase() + businessCity.slice(1);
 								
 								
-								var businessdescriptionsingular = "";
-								var businessdescriptionplural = "";
-								var industryterm = "";
-								var skilltradebusiness = "";
+								var businessdescriptionsingular = "Contractor";
+								var businessdescriptionplural = "Contractors";
+								var industryterm = "Contractor";
+								var skilltradebusiness = "Contractor";
 								
 								var naicscodesObject = JSON.parse(naicscodes);
 								for (i = 0; i < naicscodesObject.naicsmapping.length; i++) {
@@ -307,7 +307,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 	exports.getUserProfile(res, props.profileId, function(userProfile){
 		props.profile  = userProfile;
 		if(props.input == -1){
-			exports.westfieldClaimService(res, '0001546961', function(response){
+			exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
 				props.lossCause 		= response.lossCause;
 				props.policyNumber 		= response.policyNumber;
 				exports.retrievePolicyDetailsForVendor(res, props.policyNumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
@@ -319,6 +319,10 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 						props.businessDescription 	= insuredRoles.businessDescription;
 						props.businessState 		= insuredRoles.businessState;
 						props.businessCity 			= insuredRoles.businessCity;
+						props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
+						props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
+						props.industryterm = insuredRoles.industryterm;
+						props.skilltradebusiness = insuredRoles.skilltradebusiness;						
 						doWatsonConversation(props,function(conversationResp){
 							callback(conversationResp);
 						});
@@ -341,7 +345,7 @@ function doWatsonConversation(props, callback){
 
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "ee0c74f9-d639-483f-88c4-28084c74bd79";
+	workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 	  var test  = JSON.stringify(props.payload.context);
@@ -373,6 +377,12 @@ function doWatsonConversation(props, callback){
 
 	//context.DriversUnder25 =flow.get('driversUnder25');
 	context.DriversUnder25 ="0";
+	
+	context.Business_Desc_Sing = props.businessdescriptionsingular;
+	context.Business_Desc_Plural = props.businessdescriptionplural;
+	context.Industry_Term = props.industryterm;
+	context.Skill_Trade_Buisness = props.skilltradebusiness;
+	
 	}
 
 	props.payload = temp_msg;
@@ -416,12 +426,12 @@ function doWatsonConversation(props, callback){
 			};
 		var updateUserProfileRequestBody = {};
 		updateUserProfileRequestBody = profile;
-		updateUserProfileRequestBody.preferredfirstname = context.User_First_Name;
-		updateUserProfileRequestBody.providesCellPhones = context.SupplyPhones;
-		updateUserProfileRequestBody.completedsubtopics = context.Subtopic_Completion;
-		updateUserProfileRequestBody.lastcompletedtopic = context.Topic;
-		updateUserProfileRequestBody.lastcompletedsubtopic = context.Subtopic;
-		updateUserProfileRequestBody.completedtopics = context.Topic_Completion;
+		updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
+		updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
+		updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
+		updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
+		updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
+		updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
 		updateUserProfileRequestBody._rev = profile._rev;
 		exports.updateUserProfile(res, profile._id, updateUserProfileRequestBody, function(updateUserResp){
 			callback(watsonResp);
