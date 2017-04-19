@@ -85,7 +85,7 @@ exports.updateUserProfile = function(res, details, callback){
 
 exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationDate, callback){
 
-	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
+	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + "0001858" + "&verificationDate=" + verificationDate;
 	console.log(uri);
 	request({
 		method: 'GET',
