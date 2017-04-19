@@ -6,11 +6,14 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
-		"express": "4.13.x",
-		"cfenv": "1.0.x"
+    "body-parser": "1.17.1",
+    "cfenv": "1.0.x",
+    "express": "4.13.x",
+    "request": "2.81.0",
+    "xml2js": "0.4.17"
 	},
-	"repository": {},
-	"engines": {
-		"node": "4.x"
-	} 
+  "repository": {},
+  "engines": {
+	"node": "4.x"
+  }
 }
