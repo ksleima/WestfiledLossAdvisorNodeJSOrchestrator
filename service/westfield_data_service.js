@@ -10,7 +10,7 @@ var dburl = "https://94e3255e-7d4b-46c2-9bc2-50592b9fb06b-bluemix.cloudant.com";
 
 exports.authenticate = function(res, details, callback){
 	
-	var username = details.user;
+	var username = details.username;
 	var password = details.password;
 	var uri = dburl+"/userprofile/_find"
 	var reqBody ={
