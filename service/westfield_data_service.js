@@ -112,7 +112,7 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								method: 'GET',
 								uri: naicsUri
 							}, function(error, response, naicscodes) {
-								console.log(naicscodes);
+								//console.log(naicscodes);
 								var businessDescription = "";
 								var naicscode = "";
 								if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"]) != "undefined"){
@@ -137,12 +137,13 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								var industryterm = "";
 								var skilltradebusiness = "";
 								
-								for (i = 0; i < naicscodes.naicsmapping.length; i++) {
-									if (naicscodes.naicsmapping[i].code == naicscode){
-										businessdescriptionsingular = naicscodes.naicsmapping[i].businessdescriptionsingular;
-										businessdescriptionplural = naicscodes.naicsmapping[i].businessdescriptionplural;
-										industryterm = naicscodes.naicsmapping[i].industryterm;
-										skilltradebusiness = naicscodes.naicsmapping[i].skilltradebusiness;
+								var naicscodesObject = JSON.parse(naicscodes);
+								for (i = 0; i < naicscodesObject.naicsmapping.length; i++) {
+									if (naicscodesObject.naicsmapping[i].code == naicscode){
+										businessdescriptionsingular = naicscodesObject.naicsmapping[i].businessdescriptionsingular;
+										businessdescriptionplural = naicscodesObject.naicsmapping[i].businessdescriptionplural;
+										industryterm = naicscodesObject.naicsmapping[i].industryterm;
+										skilltradebusiness = naicscodesObject.naicsmapping[i].skilltradebusiness;
 									}
 								}
 
