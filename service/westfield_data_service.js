@@ -4,7 +4,7 @@ var parseString = require('xml2js').parseString;
 
 
 
-var dburl = "https://5ed2d728-0b77-4f0c-927d-c004d5932295-bluemix.cloudant.com";
+var dburl = "https://94e3255e-7d4b-46c2-9bc2-50592b9fb06b-bluemix.cloudant.com";
 
 
 
@@ -47,7 +47,8 @@ exports.getUserProfile = function(res, id, callback){
 
 exports.updateUserProfile = function(res, details, callback){
 	var id  = details.id;
-	var uri = dburl+"/userprofile/"+id;
+	//var uri = dburl+"/userprofile/"+id;
+	var uri = "/userprofile/"+id;
 	console.log(uri);
 	exports.getUserProfile(res, id, function(profile){
 		if(profile._id == undefined){
