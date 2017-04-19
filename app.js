@@ -15,6 +15,8 @@ var cfenv = require('cfenv');
 // create a new express server
 var app = express();
 
+require('./controller/controller.js')(app);
+
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
 
