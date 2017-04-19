@@ -47,8 +47,7 @@ exports.getUserProfile = function(res, id, callback){
 
 exports.updateUserProfile = function(res, details, callback){
 	var id  = details.id;
-	//var uri = dburl+"/userprofile/"+id;
-	var uri = "/userprofile/"+id;
+	var uri = dburl+"/userprofile/"+id;
 	console.log(uri);
 	exports.getUserProfile(res, id, function(profile){
 		if(profile._id == undefined){
