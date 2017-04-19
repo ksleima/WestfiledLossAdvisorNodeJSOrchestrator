@@ -416,7 +416,9 @@ function doWatsonConversation(props, callback){
 		},
 		json: watsonConversationInput
 	}, function(error, response, res_body) {
-		
+		console.log(error);
+		console.log(response);
+		console.log(res_body);
 		var Watson_response = JSON.stringify(res_body.output.text);
 		var Watson_context = JSON.stringify(res_body.context);
 		var watsonResp = {
