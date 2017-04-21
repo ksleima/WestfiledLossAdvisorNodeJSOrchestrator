@@ -119,7 +119,7 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 											method: 'GET',
 											uri: naicsUri
 										}, function(error, response, naicscodes) {
-											WestFieldCache.set( "naicscodes", obj, function( err, success ){
+											WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
 												prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
 													callback(resp);
 												});
