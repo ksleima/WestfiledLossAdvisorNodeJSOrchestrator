@@ -78,4 +78,14 @@ module.exports = function(app) {
                 res.end();
             });            
     });
+	
+	app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.get('/resetcache/:key', function(req , res){
+			var key = req.params.key;
+            services.resetCache(res, key, function (found) {
+                res.json(found);    
+                res.end();
+            });            
+    });
 }

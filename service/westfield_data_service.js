@@ -1,6 +1,9 @@
 var express  = require('express');
 var request = require('request'); 
 var parseString = require('xml2js').parseString;
+var Promise = require('es6-promise').Promise;
+const NodeCache = require( "node-cache" );
+const WestFieldCache = new NodeCache({ stdTTL: 0, checkperiod: 0 });
 
 
 
@@ -106,57 +109,30 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								"message": "Failed to parse xml response"
 							});
 						}else{
-							var naicsUri = dburl+ "/naics/1";
-							request({
-								method: 'GET',
-								uri: naicsUri
-							}, function(error, response, naicscodes) {
-								//console.log(naicscodes);
-								var businessDescription = "Contractor";
-								var naicscode = "";
-								if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"]) != "undefined"){
-									if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"]!= "undefined")){
-										businessDescription = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"][0];
-									}
-									if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"]!= "undefined")){
-										naicscode = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"][0];
-									}
-								}
-								//businessDescription = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"][0];
-								//naicscode = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"][0];
-								console.log(businessDescription);
-								var businessState = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["partyContactPreferences"][0]["contactPoints"][0]["state"][0];
-								var businessCity = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["partyContactPreferences"][0]["contactPoints"][0]["city"][0];
-								businessCity = businessCity.toLowerCase();
-								businessCity = businessCity.charAt(0).toUpperCase() + businessCity.slice(1);
-								
-								
-								var businessdescriptionsingular = "Contractor";
-								var businessdescriptionplural = "Contractors";
-								var industryterm = "Contractor";
-								var skilltradebusiness = "Contractor";
-								
-								var naicscodesObject = JSON.parse(naicscodes);
-								for (i = 0; i < naicscodesObject.naicsmapping.length; i++) {
-									if (naicscodesObject.naicsmapping[i].code == naicscode){
-										businessdescriptionsingular = naicscodesObject.naicsmapping[i].businessdescriptionsingular;
-										businessdescriptionplural = naicscodesObject.naicsmapping[i].businessdescriptionplural;
-										industryterm = naicscodesObject.naicsmapping[i].industryterm;
-										skilltradebusiness = naicscodesObject.naicsmapping[i].skilltradebusiness;
+							
+							WestFieldCache.get( "naicscodes", function( err, value ){
+								var naicscodes;
+								if( !err ){
+									if(value == undefined){
+										var naicsUri = dburl+ "/naics/1";
+										request({
+											method: 'GET',
+											uri: naicsUri
+										}, function(error, response, naicscodes) {
+											WestFieldCache.set( "naicscodes", obj, function( err, success ){
+												prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
+													callback(resp);
+												});
+											});
+										});
+									}else{
+										console.log( value );
+										naicscodes = value;
+										prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
+											callback(resp);
+										});
 									}
 								}
-
-								var msg = {};
-								msg.payload = {
-									"businessDescription" : businessDescription,
-									"businessState" : businessState,
-									"businessCity" : businessCity,
-									"businessdescriptionsingular" : businessdescriptionsingular,
-									"businessdescriptionplural" : businessdescriptionplural,
-									"industryterm" : industryterm,
-									"skilltradebusiness" : skilltradebusiness
-								}; 
-								callback(msg);
 							});
 						}
 					});
@@ -173,6 +149,54 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 		
 	}); 
 }
+
+function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
+	var businessDescription = "Contractor";
+	var naicscode = "";
+	if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"]) != "undefined"){
+		if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"]!= "undefined")){
+			businessDescription = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"][0];
+		}
+		if(typeof(result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"]!= "undefined")){
+			naicscode = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"][0];
+		}
+	}
+	//businessDescription = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"][0];
+	//naicscode = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"][0];
+	console.log(businessDescription);
+	var businessState = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["partyContactPreferences"][0]["contactPoints"][0]["state"][0];
+	var businessCity = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["partyContactPreferences"][0]["contactPoints"][0]["city"][0];
+	businessCity = businessCity.toLowerCase();
+	businessCity = businessCity.charAt(0).toUpperCase() + businessCity.slice(1);
+	
+	
+	var businessdescriptionsingular = "Contractor";
+	var businessdescriptionplural = "Contractors";
+	var industryterm = "Contractor";
+	var skilltradebusiness = "Contractor";
+	
+	var naicscodesObject = JSON.parse(naicscodes);
+	for (i = 0; i < naicscodesObject.naicsmapping.length; i++) {
+		if (naicscodesObject.naicsmapping[i].code == naicscode){
+			businessdescriptionsingular = naicscodesObject.naicsmapping[i].businessdescriptionsingular;
+			businessdescriptionplural = naicscodesObject.naicsmapping[i].businessdescriptionplural;
+			industryterm = naicscodesObject.naicsmapping[i].industryterm;
+			skilltradebusiness = naicscodesObject.naicsmapping[i].skilltradebusiness;
+		}
+	}
+
+	var msg = {};
+	msg.payload = {
+		"businessDescription" : businessDescription,
+		"businessState" : businessState,
+		"businessCity" : businessCity,
+		"businessdescriptionsingular" : businessdescriptionsingular,
+		"businessdescriptionplural" : businessdescriptionplural,
+		"industryterm" : industryterm,
+		"skilltradebusiness" : skilltradebusiness
+	}; 
+	callback(msg);
+};
 
 exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verificationDate, callback){
 
@@ -307,15 +331,64 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 	exports.getUserProfile(res, props.profileId, function(userProfile){
 		props.profile  = userProfile;
 		if(props.input == -1){
-			exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
+			
+			var p1 = new Promise(function(resolve,reject){
+				exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
+					if(response.lossCause == undefined){
+						reject(response);
+					}else{
+						props.lossCause 		= response.lossCause;
+						props.policyNumber 		= response.policyNumber;
+						resolve(props);
+					}
+				});
+			});
+			
+			var p2 =  new Promise(function(resolve,reject){
+				exports.retrievePolicyDetailsForVendor(res, "0001858","2017-01-01T00:01:00.000-05:00", function(policyDetails){
+					if(policyDetails.namedInsured == undefined){
+						reject(policyDetails);
+					}else{
+						props.namedInsured 		= policyDetails.namedInsured;
+						props.numberOfVehicles 	= policyDetails.numberOfVehicles;
+						props.numberOfDrivers 	= policyDetails.numberOfDrivers;
+						props.driversUnder25 	= policyDetails.driversUnder25;
+						resolve(props);
+					}
+				});
+			})
+			
+			var p3  = new Promise(function(resolve,reject){
+				exports.retreiveInsuredRolesForPolicy(res, "0001858","2017-01-01T00:01:00.000-05:00", function(insuredRoles){
+					if(insuredRoles.businessDescription == undefined){
+						reject(insuredRoles);
+					}else{
+						props.businessDescription 	= insuredRoles.businessDescription;
+						props.businessState 		= insuredRoles.businessState;
+						props.businessCity 			= insuredRoles.businessCity;
+						props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
+						props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
+						props.industryterm = insuredRoles.industryterm;
+						props.skilltradebusiness = insuredRoles.skilltradebusiness;
+						resolve(props);
+					}
+				});
+			});
+			
+			Promise.all([p1,p2,p3]).then(function(results){
+				doWatsonConversation(props,function(conversationResp){
+					callback(conversationResp);
+				});
+			});
+			/* exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
 				props.lossCause 		= response.lossCause;
 				props.policyNumber 		= response.policyNumber;
-				exports.retrievePolicyDetailsForVendor(res, props.policyNumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
+				exports.retrievePolicyDetailsForVendor(res, "0001858","2017-01-01T00:01:00.000-05:00", function(policyDetails){
 					props.namedInsured 		= policyDetails.namedInsured;
 					props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 					props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 					props.driversUnder25 	= policyDetails.driversUnder25;
-					exports.retreiveInsuredRolesForPolicy(res, props.policyNumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
+					exports.retreiveInsuredRolesForPolicy(res, "0001858","2017-01-01T00:01:00.000-05:00", function(insuredRoles){
 						props.businessDescription 	= insuredRoles.businessDescription;
 						props.businessState 		= insuredRoles.businessState;
 						props.businessCity 			= insuredRoles.businessCity;
@@ -328,7 +401,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 						});
 					});
 				});
-			});
+			}); */
 		}else{
 			doWatsonConversation(props,function(conversationResp){
 				callback(conversationResp);
@@ -442,4 +515,30 @@ function doWatsonConversation(props, callback){
 	});
 }
 
-
+exports.resetCache = function(res,key,callback){
+	if(key == 'ALL'){
+		WestFieldCache.flushAll();
+		console.log("All cached object cleared");
+		callback({
+			"responsecode": "200",
+			"message": "All cached object cleared"
+		});
+	}else{
+		WestFieldCache.del(key, function( err, count ){
+			if(!err ){
+				console.log( count+ " cached object deleted" );
+				callback({
+					"responsecode": "200",
+					"message": count+ " cached object cleared"
+				}); 
+			}else{
+				console.log( "Failed to clear cached object" );
+				callback({
+					"responsecode": "500",
+					"message": "Failed to clear cached object"
+				}); 
+			}
+		});
+	
+	}
+}
