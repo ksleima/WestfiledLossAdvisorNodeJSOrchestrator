@@ -442,7 +442,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 							resolve(props);
 						}
 					});
-				})
+				});
 				
 				var p3  = new Promise(function(resolve,reject){
 					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
