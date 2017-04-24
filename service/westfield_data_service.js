@@ -446,8 +446,10 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				})
 				
 				var p3  = new Promise(function(resolve,reject){
-					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
-						if(insuredRoles.businessDescription == undefined){
+//					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
+					var today = new Date();
+					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,today, function(insuredRoles){
+					if(insuredRoles.businessDescription == undefined){
 							reject(insuredRoles);
 						}else{
 							props.businessDescription 	= insuredRoles.businessDescription;
