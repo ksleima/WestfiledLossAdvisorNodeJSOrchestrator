@@ -154,7 +154,8 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 											method: 'GET',
 											uri: naicsUri
 										}, function(error, response, naicscodes) {
-											if(error != null || naicscodes._id == null || naicscodes._id ==  undefined){
+											var parsednaicscodes= JSON.parse(naicscodes);
+											if(error != null || parsednaicscodes._id == null || parsednaicscodes._id ==  undefined){
 												callback({
 													"responsecode": "404",
 													"message": "naics data not found"
@@ -183,7 +184,8 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 										method: 'GET',
 										uri: naicsUri
 									}, function(error, response, naicscodes) {
-										if(error != null || naicscodes._id == null || naicscodes._id ==  undefined){
+										var parsednaicscodes = JSON.parse(naicscodes);
+										if(error != null || parsednaicscodes._id == null || parsednaicscodes._id ==  undefined){
 											callback({
 												"responsecode": "404",
 												"message": "naics data not found"
