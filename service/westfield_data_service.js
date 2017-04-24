@@ -123,7 +123,7 @@ exports.updateUserProfile = function(res, details, callback){
 
 exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationDate, callback){
 
-	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + "0001858" + "&verificationDate=" + verificationDate;
+	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
 	console.log(uri);
 	request({
 		method: 'GET',
@@ -311,6 +311,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 						var rolesInFinServAgreement = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"];
 						var birthdateString;
 						var today = new Date();
+						console.log(today);
 						var party;
 						for (j = 0; j < rolesInFinServAgreement.length; j++) {
 						   if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "NamedDriver"){
@@ -430,7 +431,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				var p2 =  new Promise(function(resolve,reject){
-					exports.retrievePolicyDetailsForVendor(res, "0001858","2017-01-01T00:01:00.000-05:00", function(policyDetails){
+					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
 						if(policyDetails.namedInsured == undefined){
 							reject(policyDetails);
 						}else{
@@ -444,7 +445,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				})
 				
 				var p3  = new Promise(function(resolve,reject){
-					exports.retreiveInsuredRolesForPolicy(res, "0001858","2017-01-01T00:01:00.000-05:00", function(insuredRoles){
+					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
 						if(insuredRoles.businessDescription == undefined){
 							reject(insuredRoles);
 						}else{
