@@ -462,6 +462,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				Promise.all([p1,p2,p3]).then(function(results){
+					console.log(results);
 					doWatsonConversation(props,function(conversationResp){
 						callback(conversationResp);
 					});
@@ -535,10 +536,10 @@ function doWatsonConversation(props, callback){
 
 	props.payload = temp_msg;
 
-	var params = {
-		 context: context, 
-		 workspace_id : workspace_id
-	};
+	//var params = {
+	//	 context: context, 
+	//	 workspace_id : workspace_id
+	//};
 
 	/* var watsonConversationInput =  {
 		payload: temp_msg,
