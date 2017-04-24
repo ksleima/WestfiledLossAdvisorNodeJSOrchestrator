@@ -34,7 +34,7 @@ exports.authenticate = function(res, details, callback){
 		if(error != null  || res_body.docs.length <=0 || res_body.docs[0]== null ||res_body.docs[0]== undefined){
 			callback({
 				"responsecode": "404",
-				"message": "User not found with username and password comination"
+				"message": "User not found with username and password combination"
 			});
 		}else{
 			callback(res_body);
@@ -53,8 +53,8 @@ exports.getUserProfile = function(res, id, callback){
 		uri: uri
 	}, function(error, response, res_body) {
 		console.log(error);
-		console.log(res_body);
-		if(error != null  || res_body._id == null || res_body._id == undefined){
+		var parsedresponse = JSON.parse(res_body);
+		if(error != null  || parsedresponse._id == null || parsedresponse._id == undefined){
 			callback({
 				"responsecode": "404",
 				"message": "User not found"
