@@ -88,4 +88,14 @@ module.exports = function(app) {
                 res.end();
             });            
     });
+	
+	app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.put('/resetuser', function(req , res){
+		   var details = req.body;
+            services.resetUserprofile(res, details, function (found) {
+                res.json(found);    
+                res.end();
+            });            
+    });
 }

@@ -30,8 +30,16 @@ exports.authenticate = function(res, details, callback){
 			'Content-Type': 'application/json'
 		},
 		json: reqBody
-	}, function(error, response, res_body) {		
-		callback(res_body);
+	}, function(error, response, res_body) {
+		if(error != null  || res_body.docs.length <=0 || res_body.docs[0]== null ||res_body.docs[0]== undefined){
+			callback({
+				"responsecode": "404",
+				"message": "User not found with username and password comination"
+			});
+		}else{
+			callback(res_body);
+		}
+		
 	});
 }
 
@@ -43,8 +51,24 @@ exports.getUserProfile = function(res, id, callback){
 	request({
 		method: 'GET',
 		uri: uri
-	}, function(error, response, res_body) {		
-		callback(JSON.parse(res_body));
+	}, function(error, response, res_body) {	
+		if(error != null  || res_body._id == null || res_body._id == undefined){
+			callback({
+				"responsecode": "404",
+				"message": "User not found"
+			});
+		}else{
+			try{
+				callback(JSON.parse(res_body));
+			}catch(err){
+				callback({
+					"responsecode": "500",
+					"message": "Failed to fetch User profile information"
+				});
+			}
+			
+		}
+		
 	});
 }
 
@@ -53,7 +77,7 @@ exports.updateUserProfile = function(res, details, callback){
 	var uri = dburl+"/userprofile/"+id;
 	console.log(uri);
 	exports.getUserProfile(res, id, function(profile){
-		if(profile._id == undefined){
+		if(profile.responsecode != null && profile.responsecode != undefined){
 			callback(profile);
 		}else{
 			if(details.preferredfirstname != undefined){
@@ -78,8 +102,17 @@ exports.updateUserProfile = function(res, details, callback){
 					'Content-Type': 'application/json'
 				},
 				json: profile
-			}, function(error, response, res_body) {		
-				callback(res_body);
+			}, function(error, response, res_body) {
+				if(error != null || res_body._id == null || res_body._id == undefined){
+					console.log("Error occured while updating User information");
+					callback({
+						"responsecode": "500",
+						"message": "Error occured while updating User information"
+					});
+				}else{
+					callback(res_body);
+				}
+				
 			});
 		}
 		
@@ -112,18 +145,28 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 							
 							WestFieldCache.get( "naicscodes", function( err, value ){
 								var naicscodes;
-								if( !err ){
+								if( err == null ){
 									if(value == undefined){
 										var naicsUri = dburl+ "/naics/1";
 										request({
 											method: 'GET',
 											uri: naicsUri
 										}, function(error, response, naicscodes) {
-											WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
-												prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
-													callback(resp);
+											if(error != null || naicscodes._id == null || naicscodes._id ==  undefined){
+												callback({
+													"responsecode": "404",
+													"message": "naics data not found"
 												});
-											});
+											}else{
+												WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
+													if(err != null){
+														console.log("Failed to set naics codes cache");
+													}
+													prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
+														callback(resp);
+													});
+												});
+											}
 										});
 									}else{
 										console.log( value );
@@ -132,6 +175,26 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 											callback(resp);
 										});
 									}
+								}else{
+									var naicsUri = dburl+ "/naics/1";
+									request({
+										method: 'GET',
+										uri: naicsUri
+									}, function(error, response, naicscodes) {
+										if(error != null || naicscodes._id == null || naicscodes._id ==  undefined){
+											callback({
+												"responsecode": "404",
+												"message": "naics data not found"
+											});
+										}else{
+											WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
+												console.log("Failed to set naics codes cache");
+												prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
+													callback(resp);
+												});
+											});
+										}
+									});
 								}
 							});
 						}
@@ -143,10 +206,6 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 					});
 				}
 			}
-			
-			
-		
-		
 	}); 
 }
 
@@ -175,7 +234,18 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 	var industryterm = "Contractor";
 	var skilltradebusiness = "Contractor";
 	
-	var naicscodesObject = JSON.parse(naicscodes);
+	var naicscodesObject;
+	try{
+		naicscodesObject = JSON.parse(naicscodes);
+	}catch(err){
+		console.log("failed to parse naics codes");
+		callback({
+			"responsecode": "500",
+			"message": "Error while parsing naics codes"
+		});
+		return;
+	}
+	
 	for (i = 0; i < naicscodesObject.naicsmapping.length; i++) {
 		if (naicscodesObject.naicsmapping[i].code == naicscode){
 			businessdescriptionsingular = naicscodesObject.naicsmapping[i].businessdescriptionsingular;
@@ -243,7 +313,15 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							   drivers = drivers + 1;
 							   party = rolesInFinServAgreement[j].party[0];
 							   birthdateString = party.birthDate[0];
-							   birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
+							   try{
+								   birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
+							   }catch(err){
+									callback({
+										"responsecode": "500",
+										"message": "Invalid birth date for user"
+									});
+									return;
+							   }							   
 							   if(today.getYear()-birthdate.getYear() < 25){
 								   driverslessthan25 = driverslessthan25 + 1;
 							   }
@@ -329,84 +407,69 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 	props.details 		= details;
 	
 	exports.getUserProfile(res, props.profileId, function(userProfile){
-		props.profile  = userProfile;
-		if(props.input == -1){
-			
-			var p1 = new Promise(function(resolve,reject){
-				exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
-					if(response.lossCause == undefined){
-						reject(response);
-					}else{
-						props.lossCause 		= response.lossCause;
-						props.policyNumber 		= response.policyNumber;
-						resolve(props);
-					}
+		if(userProfile.responsecode != null && userProfile.responsecode != undefined){
+			callback(userProfile);
+		}else{
+			props.profile  = userProfile;
+			if(props.input == -1){
+				
+				var p1 = new Promise(function(resolve,reject){
+					exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
+						if(response.lossCause == undefined){
+							reject(response);
+						}else{
+							props.lossCause 		= response.lossCause;
+							props.policyNumber 		= response.policyNumber;
+							resolve(props);
+						}
+					});
 				});
-			});
-			
-			var p2 =  new Promise(function(resolve,reject){
-				exports.retrievePolicyDetailsForVendor(res, "0001858","2017-01-01T00:01:00.000-05:00", function(policyDetails){
-					if(policyDetails.namedInsured == undefined){
-						reject(policyDetails);
-					}else{
-						props.namedInsured 		= policyDetails.namedInsured;
-						props.numberOfVehicles 	= policyDetails.numberOfVehicles;
-						props.numberOfDrivers 	= policyDetails.numberOfDrivers;
-						props.driversUnder25 	= policyDetails.driversUnder25;
-						resolve(props);
-					}
+				
+				var p2 =  new Promise(function(resolve,reject){
+					exports.retrievePolicyDetailsForVendor(res, "0001858","2017-01-01T00:01:00.000-05:00", function(policyDetails){
+						if(policyDetails.namedInsured == undefined){
+							reject(policyDetails);
+						}else{
+							props.namedInsured 		= policyDetails.namedInsured;
+							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
+							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
+							props.driversUnder25 	= policyDetails.driversUnder25;
+							resolve(props);
+						}
+					});
+				})
+				
+				var p3  = new Promise(function(resolve,reject){
+					exports.retreiveInsuredRolesForPolicy(res, "0001858","2017-01-01T00:01:00.000-05:00", function(insuredRoles){
+						if(insuredRoles.businessDescription == undefined){
+							reject(insuredRoles);
+						}else{
+							props.businessDescription 	= insuredRoles.businessDescription;
+							props.businessState 		= insuredRoles.businessState;
+							props.businessCity 			= insuredRoles.businessCity;
+							props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
+							props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
+							props.industryterm = insuredRoles.industryterm;
+							props.skilltradebusiness = insuredRoles.skilltradebusiness;
+							resolve(props);
+						}
+					});
 				});
-			})
-			
-			var p3  = new Promise(function(resolve,reject){
-				exports.retreiveInsuredRolesForPolicy(res, "0001858","2017-01-01T00:01:00.000-05:00", function(insuredRoles){
-					if(insuredRoles.businessDescription == undefined){
-						reject(insuredRoles);
-					}else{
-						props.businessDescription 	= insuredRoles.businessDescription;
-						props.businessState 		= insuredRoles.businessState;
-						props.businessCity 			= insuredRoles.businessCity;
-						props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
-						props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
-						props.industryterm = insuredRoles.industryterm;
-						props.skilltradebusiness = insuredRoles.skilltradebusiness;
-						resolve(props);
-					}
+				
+				Promise.all([p1,p2,p3]).then(function(results){
+					doWatsonConversation(props,function(conversationResp){
+						callback(conversationResp);
+					});
+				}).catch(function (error) { 
+					callback(error);
 				});
-			});
-			
-			Promise.all([p1,p2,p3]).then(function(results){
+			}else{
 				doWatsonConversation(props,function(conversationResp){
 					callback(conversationResp);
 				});
-			});
-			/* exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
-				props.lossCause 		= response.lossCause;
-				props.policyNumber 		= response.policyNumber;
-				exports.retrievePolicyDetailsForVendor(res, "0001858","2017-01-01T00:01:00.000-05:00", function(policyDetails){
-					props.namedInsured 		= policyDetails.namedInsured;
-					props.numberOfVehicles 	= policyDetails.numberOfVehicles;
-					props.numberOfDrivers 	= policyDetails.numberOfDrivers;
-					props.driversUnder25 	= policyDetails.driversUnder25;
-					exports.retreiveInsuredRolesForPolicy(res, "0001858","2017-01-01T00:01:00.000-05:00", function(insuredRoles){
-						props.businessDescription 	= insuredRoles.businessDescription;
-						props.businessState 		= insuredRoles.businessState;
-						props.businessCity 			= insuredRoles.businessCity;
-						props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
-						props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
-						props.industryterm = insuredRoles.industryterm;
-						props.skilltradebusiness = insuredRoles.skilltradebusiness;						
-						doWatsonConversation(props,function(conversationResp){
-							callback(conversationResp);
-						});
-					});
-				});
-			}); */
-		}else{
-			doWatsonConversation(props,function(conversationResp){
-				callback(conversationResp);
-			});
+			}
 		}
+		
 	});
 	
 }
@@ -421,10 +484,17 @@ function doWatsonConversation(props, callback){
 	workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
-	  var test  = JSON.stringify(props.payload.context);
-	  if (test.length > 2) {
-		context = JSON.parse(props.payload.context);
-	  }
+		var test  = JSON.stringify(props.payload.context);
+		if (test.length > 2) {
+			try{
+				context = JSON.parse(props.payload.context);
+			}catch(err){
+				callback({
+					"responsecode": "500",
+					"message": "Error in Watson conversation"
+				});
+			}
+		}
 	}
 
 	context.SupplyPhones = profile.providesCellPhones;
@@ -489,28 +559,37 @@ function doWatsonConversation(props, callback){
 		},
 		json: watsonConversationInput
 	}, function(error, response, res_body) {
-		console.log(error);
-		//console.log(response);
-		console.log(res_body);
-		var Watson_response = JSON.stringify(res_body.output.text);
-		var Watson_context = JSON.stringify(res_body.context);
-		var watsonResp = {
-				text: Watson_response.substring(2,Watson_response.length-2),
-				username: "Watson",
-				context: Watson_context
-			};
-		var updateUserProfileRequestBody = {};
-		updateUserProfileRequestBody = profile;
-		updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
-		updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
-		updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
-		updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
-		updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
-		updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
-		updateUserProfileRequestBody._rev = profile._rev;
-		exports.updateUserProfile(res, profile._id, updateUserProfileRequestBody, function(updateUserResp){
-			callback(watsonResp);
-		})
+		
+		if(error != null || res_body.output == null || res_body.output == undefined){
+			callback({
+				"responsecode": "500",
+				"message": "Error in Watson conversation"
+			});
+		}else{
+			console.log(error);
+			//console.log(response);
+			console.log(res_body);
+			var Watson_response = JSON.stringify(res_body.output.text);
+			var Watson_context = JSON.stringify(res_body.context);
+			var watsonResp = {
+					text: Watson_response.substring(2,Watson_response.length-2),
+					username: "Watson",
+					context: Watson_context
+				};
+			var updateUserProfileRequestBody = {};
+			updateUserProfileRequestBody = profile;
+			updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
+			updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
+			updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
+			updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
+			updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
+			updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+			updateUserProfileRequestBody._rev = profile._rev;
+			exports.updateUserProfile(res, profile._id, updateUserProfileRequestBody, function(updateUserResp){
+				callback(watsonResp);
+			});
+		}
+		
 		
 	});
 }
@@ -541,4 +620,77 @@ exports.resetCache = function(res,key,callback){
 		});
 	
 	}
+}
+
+exports.resetUserprofile = function(res, details, callback){
+	
+	var username = details.username;
+	var uri = dburl+"/userprofile/_find"
+	var reqBody ={
+		"selector": {
+			"username": username.toLowerCase()
+		}
+	};
+	
+	request({
+		method: 'POST',
+		uri: uri,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		json: reqBody
+	}, function(error, response, res_body) {		
+		if(error != null){
+			callback({
+				"responsecode": "500",
+				"message": "Failed to fetch User profile information"
+			}); 
+		}else{
+		
+			var profile;
+			try{
+				profile = JSON.parse(res_body);
+			}catch(err){
+				callback({
+					"responsecode": "500",
+					"message": "Failed to fetch User profile information"
+				});
+				return;
+			}
+			
+			if(profile.docs.length <= 0 || profile.docs[0] == null || profile.docs[0] == undefined){
+				callback({
+					"responsecode": "500",
+					"message": "Failed to fetch User profile information"
+				}); 
+			}else{
+				var resetValues =  profile.docs[0];
+				resetValues.completedsubtopics = [];
+				resetValues.providesCellPhones = "";
+				resetValues.preferredfirstname = "first";
+				resetValues.completedtopics = [];
+				resetValues.lastcompletedtopic = "";
+				resetValues.lastcompletedsubtopic = "";
+				
+				var updateUri = dburl+"/userprofile/"+profile.docs[0]._id;
+				request({
+					method: 'PUT',
+					uri: updateUri,
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					json: resetValues
+				}, function(error, response, resp_body) {	
+					if(error != null){
+						callback({
+							"responsecode": "500",
+							"message": "Failed to reset user profile information"
+						}); 
+					}else{
+						callback(resp_body);
+					}
+				});
+			}
+		}
+	});
 }
