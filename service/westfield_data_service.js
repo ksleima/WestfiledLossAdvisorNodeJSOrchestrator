@@ -431,7 +431,8 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				var p2 =  new Promise(function(resolve,reject){
-					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
+					var today = new Date();
+					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,today, function(policyDetails){
 						if(policyDetails.namedInsured == undefined){
 							reject(policyDetails);
 						}else{
