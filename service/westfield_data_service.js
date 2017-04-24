@@ -51,7 +51,9 @@ exports.getUserProfile = function(res, id, callback){
 	request({
 		method: 'GET',
 		uri: uri
-	}, function(error, response, res_body) {	
+	}, function(error, response, res_body) {
+		console.log(error);
+		console.log(res_body);
 		if(error != null  || res_body._id == null || res_body._id == undefined){
 			callback({
 				"responsecode": "404",
