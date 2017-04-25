@@ -490,6 +490,7 @@ function doWatsonConversation(props, callback){
 	var profile = props.profile;
 	props.payload = props.details;
 
+	console.log(props);
 	var temp_msg = props.payload.input;
 	var username = profile.username;
 	workspace_id = "46829aff-c02f-4ab8-849f-0806aaa19d34";
@@ -561,7 +562,9 @@ function doWatsonConversation(props, callback){
 		 } else {
 		  props.payload = temp_msg;
 		  var Watson_response = JSON.stringify(res_body.output.text);
+		  console.log(Watson_response);
 		  var Watson_context = JSON.stringify(res_body.context);
+		  console.log(Watson_context);
 		  var watsonResp = {
 					text: Watson_response.substring(2,Watson_response.length-2),
 					username: "Watson",
