@@ -4,7 +4,7 @@ var parseString = require('xml2js').parseString;
 var Promise = require('es6-promise').Promise;
 const NodeCache = require( "node-cache" );
 const WestFieldCache = new NodeCache({ stdTTL: 0, checkperiod: 0 });
-
+var moment = require('moment');
 
 
 var dburl = "https://94e3255e-7d4b-46c2-9bc2-50592b9fb06b-bluemix.cloudant.com";
@@ -32,6 +32,7 @@ exports.authenticate = function(res, details, callback){
 		json: reqBody
 	}, function(error, response, res_body) {
 		if(error != null  || res_body.docs.length <=0 || res_body.docs[0]== null ||res_body.docs[0]== undefined){
+			console.error(error);
 			callback({
 				"responsecode": "404",
 				"message": "User not found with username and password combination"
@@ -52,9 +53,9 @@ exports.getUserProfile = function(res, id, callback){
 		method: 'GET',
 		uri: uri
 	}, function(error, response, res_body) {
-		console.log(error);
 		var parsedresponse = JSON.parse(res_body);
 		if(error != null  || parsedresponse._id == null || parsedresponse._id == undefined){
+			console.error(error);
 			callback({
 				"responsecode": "404",
 				"message": "User not found"
@@ -63,9 +64,10 @@ exports.getUserProfile = function(res, id, callback){
 			try{
 				callback(JSON.parse(res_body));
 			}catch(err){
+				console.error(err);
 				callback({
 					"responsecode": "500",
-					"message": "Failed to fetch User profile information"
+					"message": "Failed to parse User profile information"
 				});
 			}
 			
@@ -77,7 +79,7 @@ exports.getUserProfile = function(res, id, callback){
 exports.updateUserProfile = function(res, details, callback){
 	var id  = details.id;
 	var uri = dburl+"/userprofile/"+id;
-	console.log(uri);
+//	console.log(uri);
 	exports.getUserProfile(res, id, function(profile){
 		if(profile.responsecode != null && profile.responsecode != undefined){
 			callback(profile);
@@ -106,6 +108,7 @@ exports.updateUserProfile = function(res, details, callback){
 				json: profile
 			}, function(error, response, res_body) {
 				if(error != null || res_body._id == null || res_body._id == undefined){
+					console.error(error);
 					console.log("Error occured while updating User information");
 					callback({
 						"responsecode": "500",
@@ -130,7 +133,7 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 		uri: uri
 	}, function(error, response, res_body) {
 			if(error != null){
-				console.log("Error occured while fetching InsuredRolesForPolicy");
+				console.error(error);
 				callback({
 					"responsecode": "500",
 					"message": "Error while fetching Insured roles for policy"
@@ -139,9 +142,10 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 				try{
 					parseString(res_body, function (err, result) {
 						if(err != null){
+							console.error(err);
 							callback({
 								"responsecode": "500",
-								"message": "Failed to parse xml response"
+								"message": "Failed to parse xml response of Insured roles for policy"
 							});
 						}else{
 							
@@ -149,29 +153,12 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								var naicscodes;
 								if( err == null ){
 									if(value == undefined){
-										var naicsUri = dburl+ "/naics/1";
-										request({
-											method: 'GET',
-											uri: naicsUri
-										}, function(error, response, naicscodes) {
-											var parsednaicscodes= JSON.parse(naicscodes);
-											if(error != null || parsednaicscodes._id == null || parsednaicscodes._id ==  undefined){
-												callback({
-													"responsecode": "404",
-													"message": "naics data not found"
-												});
-											}else{
-												WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
-													if(err != null){
-														console.log("Failed to set naics codes cache");
-													}
-													prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
-														callback(resp);
-													});
-												});
-											}
+										console.log("NAICS valu is not present in cache");
+										fetchNaicsCodesAndAnalyzeResult(result,function(resp){
+											callback(resp);
 										});
 									}else{
+										console.log("Fetching NAICS value from chache");
 										console.log( value );
 										naicscodes = value;
 										prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
@@ -179,38 +166,50 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 										});
 									}
 								}else{
-									var naicsUri = dburl+ "/naics/1";
-									request({
-										method: 'GET',
-										uri: naicsUri
-									}, function(error, response, naicscodes) {
-										var parsednaicscodes = JSON.parse(naicscodes);
-										if(error != null || parsednaicscodes._id == null || parsednaicscodes._id ==  undefined){
-											callback({
-												"responsecode": "404",
-												"message": "naics data not found"
-											});
-										}else{
-											WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
-												console.log("Failed to set naics codes cache");
-												prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
-													callback(resp);
-												});
-											});
-										}
+									fetchNaicsCodesAndAnalyzeResult(result,function(resp){
+										callback(resp);
 									});
+									
 								}
 							});
 						}
 					});
 				}catch(err){
+					console.error(err);
 					callback({
 						"responsecode": "500",
-						"message": "Error while fetching Insured roles for policy"
+						"message": "Error while parsing response for Insured roles of policy"
 					});
 				}
 			}
 	}); 
+}
+
+function fetchNaicsCodesAndAnalyzeResult(result,callback){
+	var naicsUri = dburl+ "/naics/1";
+	request({
+		method: 'GET',
+		uri: naicsUri
+	}, function(error, response, naicscodes) {
+		var parsednaicscodes = JSON.parse(naicscodes);
+		if(error != null || parsednaicscodes._id == null || parsednaicscodes._id ==  undefined){
+			console.error(error);
+			callback({
+				"responsecode": "404",
+				"message": "naics data not found"
+			});
+		}else{
+			WestFieldCache.set( "naicscodes", naicscodes, function( err, success ){
+				if(err != null){
+					console.error(err);
+					console.log("Failed to set naics codes cache");
+				}
+				prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
+					callback(resp);
+				});
+			});
+		}
+	});
 }
 
 function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
@@ -226,7 +225,7 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 	}
 	//businessDescription = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["description"][0];
 	//naicscode = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["industries"][0]["industryCode"][0];
-	console.log(businessDescription);
+	//console.log(businessDescription);
 	var businessState = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["partyContactPreferences"][0]["contactPoints"][0]["state"][0];
 	var businessCity = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrieveInsuredRolesForPolicyResponse"][0]["roles"][0]["party"][0]["partyContactPreferences"][0]["contactPoints"][0]["city"][0];
 	businessCity = businessCity.toLowerCase();
@@ -242,7 +241,7 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 	try{
 		naicscodesObject = JSON.parse(naicscodes);
 	}catch(err){
-		console.log("failed to parse naics codes");
+		console.error(err)
 		callback({
 			"responsecode": "500",
 			"message": "Error while parsing naics codes"
@@ -280,6 +279,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 		uri: uri
 	}, function(error, response, res_body) {
 		if(error != null){
+			console.error(error);
 			console.log("Error while fetching Policy details for vendor");
 			callback({
 				"responsecode": "500",
@@ -289,9 +289,10 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 			try{
 				parseString(res_body, function (err, result) {
 					if(err != null){
+						console.error(err);
 						callback({
 							"responsecode": "500",
-							"message": "Failed to parse xml response"
+							"message": "Failed to parse xml response for policy details of vendor"
 						});
 					}else{
 						var vehicles = 0;
@@ -311,7 +312,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 						var rolesInFinServAgreement = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"];
 						var birthdateString;
 						var today = new Date();
-						console.log(today);
+						//console.log(today);
 						var party;
 						for (j = 0; j < rolesInFinServAgreement.length; j++) {
 						   if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "NamedDriver"){
@@ -321,6 +322,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							   try{
 								   birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
 							   }catch(err){
+									console.error("Invalid birth date for user");
 									callback({
 										"responsecode": "500",
 										"message": "Invalid birth date for user"
@@ -345,9 +347,10 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 					
 				});
 			}catch(err){
+				console.error(err);
 				callback({
 					"responsecode": "500",
-					"message": "Error while fetching Policy details for vendor"
+					"message": "Error while Parsing response for Policy details of vendor"
 				});
 			}
 		}
@@ -364,6 +367,7 @@ exports.westfieldClaimService = function(res, claimNumber, callback){
 		uri: uri
 	}, function(error, response, res_body) {
 		if(error != null){
+			console.error(error);
 			console.log("Error while fetching Westfield claim details");
 			callback({
 				"responsecode": "500",
@@ -373,9 +377,10 @@ exports.westfieldClaimService = function(res, claimNumber, callback){
 			try{
 				parseString(res_body, function (err, result) {
 					if(err != null){
+						console.error(err);
 						callback({
 							"responsecode": "500",
-							"message": "Failed to parse xml response"
+							"message": "Failed to parse xml response for Westfield claim"
 						});
 					}else{
 						var policyNumber = result["tns:Envelope"]["tns:Body"][0]["WX:RetrieveClaimDetailsResponse"][0]["WX:claimFolder"][0]["WX:underlyingAgreements"][0]["WX:policyNumber"];
@@ -394,9 +399,10 @@ exports.westfieldClaimService = function(res, claimNumber, callback){
 					}
 				});
 			}catch(err){
+				console.error(err);
 				callback({
 					"responsecode": "500",
-					"message": "Error while fetching Westfield claim details"
+					"message": "Error while Parsing Westfield claim response details"
 				});
 			}
 		}
@@ -417,11 +423,12 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 		}else{
 			props.profile  = userProfile;
 			if(props.input == -1){
-				
+				var currentDate = moment(new Date()).format('YYYY-MM-DD');
 				var p1 = new Promise(function(resolve,reject){
 					exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
-						console.log("this is p1" + response);
+						//console.log("this is p1" + response);
 						if(response.lossCause == undefined){
+							//console.log("Invalid response from WestFieldClaimService");
 							reject(response);
 						}else{
 							props.lossCause 		= response.lossCause;
@@ -432,10 +439,11 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				var p2 =  new Promise(function(resolve,reject){
-					console.log("policy is " + props.profile.policynumber);
-					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
-						console.log("this is p2" + policyDetails);
+					//console.log("policy is " + props.profile.policynumber);
+					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,currentDate, function(policyDetails){
+						//console.log("this is p2" + policyDetails);
 						if(policyDetails.namedInsured == undefined){
+							.//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
 							props.namedInsured 		= policyDetails.namedInsured;
@@ -448,9 +456,10 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				var p3  = new Promise(function(resolve,reject){
-					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
-					console.log("this is p3" + insuredRoles);
-					if(insuredRoles.businessDescription == undefined){
+					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,currentDate, function(insuredRoles){
+					//console.log("this is p3" + insuredRoles);
+						if(insuredRoles.businessDescription == undefined){
+							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(insuredRoles);
 						}else{
 							props.businessDescription 	= insuredRoles.businessDescription;
@@ -466,12 +475,13 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				Promise.all([p1,p2,p3]).then(function(results){
-					console.log(results);
-					console.log("this is props" + props);
+					//console.log(results);
+					//console.log("this is props" + props);
 					doWatsonConversation(props,function(conversationResp){
 						callback(conversationResp);
 					});
 				}).catch(function (error) { 
+					console.error(error);
 					callback(error);
 				});
 			}else{
@@ -490,7 +500,7 @@ function doWatsonConversation(props, callback){
 	var profile = props.profile;
 	props.payload = props.details;
 
-	console.log(props);
+	//console.log(props);
 	var temp_msg = props.payload.input;
 	var username = profile.username;
 	workspace_id = "46829aff-c02f-4ab8-849f-0806aaa19d34";
@@ -501,9 +511,10 @@ function doWatsonConversation(props, callback){
 			try{
 				context = JSON.parse(props.payload.context);
 			}catch(err){
+				console.error(err);
 				callback({
 					"responsecode": "500",
-					"message": "Error in Watson conversation"
+					"message": "Failed to parse context information"
 				});
 			}
 		}
@@ -660,6 +671,7 @@ exports.resetCache = function(res,key,callback){
 					"message": count+ " cached object cleared"
 				}); 
 			}else{
+				console.error(err);
 				console.log( "Failed to clear cached object" );
 				callback({
 					"responsecode": "500",
@@ -690,6 +702,7 @@ exports.resetUserprofile = function(res, details, callback){
 		json: reqBody
 	}, function(error, response, res_body) {		
 		if(error != null){
+			console.error(error);
 			callback({
 				"responsecode": "500",
 				"message": "Failed to fetch User profile information"
@@ -700,17 +713,19 @@ exports.resetUserprofile = function(res, details, callback){
 			try{
 				profile = JSON.parse(res_body);
 			}catch(err){
+				console.log(err);
 				callback({
 					"responsecode": "500",
-					"message": "Failed to fetch User profile information"
+					"message": "Failed to Parse User profile information"
 				});
 				return;
 			}
 			
 			if(profile.docs.length <= 0 || profile.docs[0] == null || profile.docs[0] == undefined){
+				console.log("User Profile does not contain valid information");
 				callback({
 					"responsecode": "500",
-					"message": "Failed to fetch User profile information"
+					"message": "User Profile does not contain valid information"
 				}); 
 			}else{
 				var resetValues =  profile.docs[0];
@@ -731,6 +746,7 @@ exports.resetUserprofile = function(res, details, callback){
 					json: resetValues
 				}, function(error, response, resp_body) {	
 					if(error != null){
+						console.log(error);
 						callback({
 							"responsecode": "500",
 							"message": "Failed to reset user profile information"
