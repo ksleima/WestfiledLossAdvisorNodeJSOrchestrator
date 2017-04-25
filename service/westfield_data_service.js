@@ -48,7 +48,7 @@ exports.authenticate = function(res, details, callback){
 exports.getUserProfile = function(res, id, callback){
 	
 	var uri = dburl+"/userprofile/"+id;
-	console.log(uri);
+	//console.log(uri);
 	request({
 		method: 'GET',
 		uri: uri
@@ -746,7 +746,7 @@ exports.resetUserprofile = function(res, details, callback){
 					json: resetValues
 				}, function(error, response, resp_body) {	
 					if(error != null){
-						console.log(error);
+						console.error(error);
 						callback({
 							"responsecode": "500",
 							"message": "Failed to reset user profile information"
