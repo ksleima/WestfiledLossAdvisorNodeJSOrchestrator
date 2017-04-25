@@ -443,7 +443,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,currentDate, function(policyDetails){
 						//console.log("this is p2" + policyDetails);
 						if(policyDetails.namedInsured == undefined){
-							.//console.log("Invalid response from retrievePolicyDetailsForVendor");
+							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
 							props.namedInsured 		= policyDetails.namedInsured;
