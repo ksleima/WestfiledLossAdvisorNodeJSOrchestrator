@@ -432,6 +432,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				var p2 =  new Promise(function(resolve,reject){
+					console.log("policy is " + props.profile.policynumber);
 					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
 						console.log("this is p2" + policyDetails);
 						if(policyDetails.namedInsured == undefined){
