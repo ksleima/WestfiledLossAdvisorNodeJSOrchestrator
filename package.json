@@ -12,7 +12,8 @@
     "express": "4.13.x",
     "node-cache": "^4.1.1",
     "request": "2.81.0",
-    "xml2js": "0.4.17"
+    "xml2js": "0.4.17",
+	"watson-developer-cloud": "^2.29.0"
   },
   "repository": {},
   "engines": {

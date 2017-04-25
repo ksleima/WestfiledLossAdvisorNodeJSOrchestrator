@@ -492,7 +492,7 @@ function doWatsonConversation(props, callback){
 
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
+	workspace_id = "46829aff-c02f-4ab8-849f-0806aaa19d34";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 		var test  = JSON.stringify(props.payload.context);
@@ -539,21 +539,53 @@ function doWatsonConversation(props, callback){
 	
 	}
 
+	var ConversationV1 = require('watson-developer-cloud/conversation/v1');
+ 
+	var conversation = new ConversationV1({
+	  username: 'cc11f6ea-6f0a-4081-a364-ee65accea693',
+	  password: '7aHZsqccYiuR",
+	  version_date: '2017-04-21'
+	});
+	
+	conversation.message({
+	  context : context,
+	  input: { text: temp_msg },
+	  workspace_id: workspace_id
+	 }, function(err, res_body)  {
+		 if (err != null || res_body.output == null || res_body.output == undefined) {
+		   console.error(err);
+		   callback({
+				"responsecode": "500",
+				"message": "Error in Watson conversation"
+			});
+		 } else {
+		  props.payload = temp_msg;
+		  var Watson_response = JSON.stringify(res_body.output.text);
+		  var Watson_context = JSON.stringify(res_body.context);
+		  var watsonResp = {
+					text: Watson_response.substring(2,Watson_response.length-2),
+					username: "Watson",
+					context: Watson_context
+		  };
+		  var updateUserProfileRequestBody = {};
+		  updateUserProfileRequestBody = profile;
+		  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
+		  updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
+	      updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
+		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
+		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
+		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+		  updateUserProfileRequestBody._rev = profile._rev;
+		   exports.updateUserProfile(res, profile._id, updateUserProfileRequestBody, function(updateUserResp){
+				callback(watsonResp);
+			});
+		}
+	});
+}
+/* here	
 	props.payload = temp_msg;
 
-	//var params = {
-	//	 context: context, 
-	//	 workspace_id : workspace_id
-	//};
 
-	/* var watsonConversationInput =  {
-		payload: temp_msg,
-		params : params,
-		req : props.req,
-		res : props.res,
-		profile : props.profile,
-		profileId : props.profileId
-	}; */
 	var watsonConversationInput =  {
 		context : context,
 		input	:{
@@ -604,6 +636,7 @@ function doWatsonConversation(props, callback){
 		
 	});
 }
+end here */
 
 exports.resetCache = function(res,key,callback){
 	if(key == 'ALL'){
