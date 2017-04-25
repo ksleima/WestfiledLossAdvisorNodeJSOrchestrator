@@ -440,7 +440,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				
 				var p2 =  new Promise(function(resolve,reject){
 					//console.log("policy is " + props.profile.policynumber);
-					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,currentDate, function(policyDetails){
+					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,'2017-01-01', function(policyDetails){
 						//console.log("this is p2" + policyDetails);
 						if(policyDetails.namedInsured == undefined){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
@@ -456,7 +456,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				});
 				
 				var p3  = new Promise(function(resolve,reject){
-					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,currentDate, function(insuredRoles){
+					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,'2017-01-01', function(insuredRoles){
 					//console.log("this is p3" + insuredRoles);
 						if(insuredRoles.businessDescription == undefined){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
