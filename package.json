@@ -10,11 +10,11 @@
     "cfenv": "1.0.x",
     "es6-promise": "^4.1.0",
     "express": "4.13.x",
+    "moment": "^2.18.1",
     "node-cache": "^4.1.1",
     "request": "2.81.0",
-    "xml2js": "0.4.17",
-	"watson-developer-cloud": "^2.29.0",
-	"xml2js": "0.4.17"
+    "watson-developer-cloud": "^2.29.0",
+    "xml2js": "0.4.17"
   },
   "repository": {},
   "engines": {
