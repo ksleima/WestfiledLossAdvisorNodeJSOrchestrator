@@ -543,7 +543,7 @@ function doWatsonConversation(props, callback){
  
 	var conversation = new ConversationV1({
 	  username: 'cc11f6ea-6f0a-4081-a364-ee65accea693',
-	  password: '7aHZsqccYiuR",
+	  password: '7aHZsqccYiuR',
 	  version_date: '2017-04-21'
 	});
 	
