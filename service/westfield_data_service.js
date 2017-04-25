@@ -580,7 +580,7 @@ function doWatsonConversation(props, callback){
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
 		  updateUserProfileRequestBody._rev = profile._rev;
 		  var res;
-		   exports.updateUserProfile(res, profile._id, updateUserProfileRequestBody, function(updateUserResp){
+		   exports.updateUserProfile(res, updateUserProfileRequestBody, function(updateUserResp){
 				callback(watsonResp);
 			});
 		}
