@@ -423,7 +423,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 		}else{
 			props.profile  = userProfile;
 			if(props.input == -1){
-				var currentDate = moment(new Date()).format('YYYY-MM-DD');
+				var currentDate = moment(new Date()).format('YYYY-DD-MM');
 				var p1 = new Promise(function(resolve,reject){
 					exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
 						//console.log("this is p1" + response);
