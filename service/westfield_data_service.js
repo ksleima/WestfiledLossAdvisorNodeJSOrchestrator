@@ -420,7 +420,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				
 				var p1 = new Promise(function(resolve,reject){
 					exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
-						console.log(response);
+						console.log("this is p1" + response);
 						if(response.lossCause == undefined){
 							reject(response);
 						}else{
@@ -433,7 +433,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				
 				var p2 =  new Promise(function(resolve,reject){
 					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(policyDetails){
-						console.log(policyDetails);
+						console.log("this is p2" + policyDetails);
 						if(policyDetails.namedInsured == undefined){
 							reject(policyDetails);
 						}else{
@@ -448,7 +448,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				
 				var p3  = new Promise(function(resolve,reject){
 					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01T00:01:00.000-05:00", function(insuredRoles){
-					console.log(insuredRoles);
+					console.log("this is p3" + insuredRoles);
 					if(insuredRoles.businessDescription == undefined){
 							reject(insuredRoles);
 						}else{
@@ -466,6 +466,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 				
 				Promise.all([p1,p2,p3]).then(function(results){
 					console.log(results);
+					console.log("this is props" + props);
 					doWatsonConversation(props,function(conversationResp){
 						callback(conversationResp);
 					});
