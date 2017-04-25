@@ -107,7 +107,7 @@ exports.updateUserProfile = function(res, details, callback){
 				},
 				json: profile
 			}, function(error, response, res_body) {
-				if(error != null || res_body._id == null || res_body._id == undefined){
+				if(error != null || res_body.ok == null || !res_body.ok){
 					console.error(error);
 					console.log("Error occured while updating User information");
 					callback({
