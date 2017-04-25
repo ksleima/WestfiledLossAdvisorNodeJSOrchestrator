@@ -260,7 +260,7 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 	}
 
 	var msg = {};
-	msg.payload = {
+	msg = {
 		"businessDescription" : businessDescription,
 		"businessState" : businessState,
 		"businessCity" : businessCity,
