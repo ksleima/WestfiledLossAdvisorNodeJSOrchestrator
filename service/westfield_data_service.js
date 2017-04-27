@@ -148,30 +148,41 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 								"message": "Failed to parse xml response of Insured roles for policy"
 							});
 						}else{
-							
-							WestFieldCache.get( "naicscodes", function( err, value ){
-								var naicscodes;
-								if( err == null ){
-									if(value == undefined){
-										console.log("NAICS valu is not present in cache");
+							if(result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"] != undefined){
+								console.log("Within Error");
+								console.log(result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"][0]["detail"]);
+								var errorCode  = result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"][0]["detail"][0]["ErrorInfo"][0]["errorCode"][0];
+								var errorMessage  = result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"][0]["detail"][0]["ErrorInfo"][0]["errorMessageText"][0];
+								console.error(errorMessage);
+								callback({
+									"responsecode": "500",
+									"message": errorMessage
+								});
+							}else{
+								WestFieldCache.get( "naicscodes", function( err, value ){
+									var naicscodes;
+									if( err == null ){
+										if(value == undefined){
+											console.log("NAICS valu is not present in cache");
+											fetchNaicsCodesAndAnalyzeResult(result,function(resp){
+												callback(resp);
+											});
+										}else{
+											console.log("Fetching NAICS value from chache");
+											console.log( value );
+											naicscodes = value;
+											prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
+												callback(resp);
+											});
+										}
+									}else{
 										fetchNaicsCodesAndAnalyzeResult(result,function(resp){
 											callback(resp);
 										});
-									}else{
-										console.log("Fetching NAICS value from chache");
-										console.log( value );
-										naicscodes = value;
-										prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
-											callback(resp);
-										});
+										
 									}
-								}else{
-									fetchNaicsCodesAndAnalyzeResult(result,function(resp){
-										callback(resp);
-									});
-									
-								}
-							});
+								});
+							}
 						}
 					});
 				}catch(err){
@@ -295,54 +306,69 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							"message": "Failed to parse xml response for policy details of vendor"
 						});
 					}else{
-						var vehicles = 0;
-						var drivers = 0;
-						var driverslessthan25 = 0;
-						var namedinsured = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"][0]["party"][0]["allNames"][0]["fullName"][0]
+						
+						if(result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"] != undefined){
+							console.log("Within Error");
+							console.log(result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"][0]["detail"]);
+							var errorCode  = result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"][0]["detail"][0]["ErrorInfo"][0]["errorCode"][0];
+							var errorMessage  = result["soapenv:Envelope"]["soapenv:Body"][0]["soapenv:Fault"][0]["detail"][0]["ErrorInfo"][0]["errorMessageText"][0];
+							console.error(errorMessage);
+							callback({
+								"responsecode": "500",
+								"message": errorMessage
+							});
+						}else{
+							var vehicles = 0;
+							var drivers = 0;
+							var driverslessthan25 = 0;
+							var namedinsured = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"][0]["party"][0]["allNames"][0]["fullName"][0]
 
 
-						var finServAgreementComponents = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["financialServicesAgreementComponents"];
+							var finServAgreementComponents = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["financialServicesAgreementComponents"];
 
-						for (i = 0; i < finServAgreementComponents.length; i++) {
-						   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].type[0].name[0] == "Vehicle"){
-							   vehicles = vehicles + 1;
-						   }
-						}
-
-						var rolesInFinServAgreement = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"];
-						var birthdateString;
-						var today = new Date();
-						//console.log(today);
-						var party;
-						for (j = 0; j < rolesInFinServAgreement.length; j++) {
-						   if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "NamedDriver"){
-							   drivers = drivers + 1;
-							   party = rolesInFinServAgreement[j].party[0];
-							   birthdateString = party.birthDate[0];
-							   try{
-								   birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
-							   }catch(err){
-									console.error("Invalid birth date for user");
-									callback({
-										"responsecode": "500",
-										"message": "Invalid birth date for user"
-									});
-									return;
-							   }							   
-							   if(today.getYear()-birthdate.getYear() < 25){
-								   driverslessthan25 = driverslessthan25 + 1;
+							for (i = 0; i < finServAgreementComponents.length; i++) {
+							   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].type[0].name[0] == "Vehicle"){
+								   vehicles = vehicles + 1;
 							   }
-						   }
-						}
+							}
 
-						var msg = {};
-						msg = {
-							"namedInsured" : namedinsured,
-							"numberOfVehicles" : vehicles,
-							"numberOfDrivers" : drivers,
-							"driversUnder25" : driverslessthan25,
-						};
-						callback(msg);
+							var rolesInFinServAgreement = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"];
+							var birthdateString;
+							var today = new Date();
+							//console.log(today);
+							var party;
+							for (j = 0; j < rolesInFinServAgreement.length; j++) {
+							   if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "NamedDriver"){
+								   drivers = drivers + 1;
+								   party = rolesInFinServAgreement[j].party[0];
+								   birthdateString = party.birthDate[0];
+								   try{
+									   birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
+								   }catch(err){
+										console.error("Invalid birth date for user");
+										callback({
+											"responsecode": "500",
+											"message": "Invalid birth date for user"
+										});
+										return;
+								   }							   
+								   if(today.getYear()-birthdate.getYear() < 25){
+									   driverslessthan25 = driverslessthan25 + 1;
+								   }
+							   }
+							}
+
+							var msg = {};
+							msg = {
+								"namedInsured" : namedinsured,
+								"numberOfVehicles" : vehicles,
+								"numberOfDrivers" : drivers,
+								"driversUnder25" : driverslessthan25,
+							};
+							callback(msg);
+						}
+						
+						
 					}
 					
 				});
@@ -383,6 +409,17 @@ exports.westfieldClaimService = function(res, claimNumber, callback){
 							"message": "Failed to parse xml response for Westfield claim"
 						});
 					}else{
+						if(result["tns:Envelope"]["tns:Body"][0]["soapenv:Fault"] != undefined){
+							console.log("Within Error");
+							var errorMessage  = result["tns:Envelope"]["tns:Body"][0]["soapenv:Fault"][0]["detail"][0]["WX:ErrorInfo"][0]["WX:errorMessageText"][0];
+							console.error(errorMessage);
+							callback({
+								"responsecode": "500",
+								"message": errorMessage
+							});
+						}else{
+							
+						}
 						var policyNumber = result["tns:Envelope"]["tns:Body"][0]["WX:RetrieveClaimDetailsResponse"][0]["WX:claimFolder"][0]["WX:underlyingAgreements"][0]["WX:policyNumber"];
 						var lossCause = result["tns:Envelope"]["tns:Body"][0]["WX:RetrieveClaimDetailsResponse"][0]["WX:claimFolder"][0]["WX:claimedLossEvents"][0]["WX:causeOfLoss"];
 						var detailedLossCause = result["tns:Envelope"]["tns:Body"][0]["WX:RetrieveClaimDetailsResponse"][0]["WX:claimFolder"][0]["WX:claimedLossEvents"][0]["WX:detailedLossCause"];
