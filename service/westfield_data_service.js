@@ -540,7 +540,7 @@ function doWatsonConversation(props, callback){
 	//console.log(props);
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "46829aff-c02f-4ab8-849f-0806aaa19d34";
+	workspace_id = "67f89d5a-0917-48e3-a340-e76149eb0c21";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 		var test  = JSON.stringify(props.payload.context);
