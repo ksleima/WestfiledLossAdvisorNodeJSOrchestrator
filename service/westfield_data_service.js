@@ -796,3 +796,49 @@ exports.resetUserprofile = function(res, details, callback){
 		}
 	});
 }
+
+exports.saveConversationMessage = function(res, details, callback){
+	
+	var uri = dburl+"/conversationlog"
+	
+	var context = {};
+	var conversationId = "";
+	var text = details.input;
+	var profileId = details.profileId;
+	var newDate = new Date();
+	var to = details.to;
+	var from = details.from;
+	if (typeof(details.context) != "undefined"){
+	  context  = JSON.parse(details.context);
+	  conversationId = context.conversation_id;
+	}
+	var reqBody = {
+			"type": "conversationlog",
+			"conversationId": conversationId,
+			"from": from,
+			"to" : to,
+			"profileId" : profileId, 
+			"message" : text,
+			"context" : context,
+			"datetime" : newDate
+		};
+	
+	request({
+		method: 'POST',
+		uri: uri,
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		json: reqBody
+	}, function(error, response, res_body) {
+		if(error != null){
+			console.error(error);
+			callback({
+				"responsecode": "500",
+				"message": "Failed to store conversation message"
+			});
+		}else{
+			callback(res_body);
+		}
+	});
+}
