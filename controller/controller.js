@@ -71,9 +71,19 @@ module.exports = function(app) {
 	
 	app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
-    app.post('/cognitiveorchestrator2', function(req , res){
+    app.post('/cognitiveorchestrator', function(req , res){
 			var details = req.body;
             services.cognitiveOrchestrator(res, details, function (found) {
+                res.json(found);    
+                res.end();
+            });            
+    });
+	
+	app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.post('/cognitiveorchestrator2', function(req , res){
+			var details = req.body;
+            services.cognitiveOrchestrator2(res, details, function (found) {
                 res.json(found);    
                 res.end();
             });            

@@ -532,6 +532,91 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 	
 }
 
+exports.cognitiveOrchestrator2 = function(res,details,callback){
+
+	var props = {};
+	props.profileId  	= details.id;
+	props.input  		= details.input;
+	props.details 		= details;
+	
+	exports.getUserProfile(res, props.profileId, function(userProfile){
+		if(userProfile.responsecode != null && userProfile.responsecode != undefined){
+			callback(userProfile);
+		}else{
+			props.profile  = userProfile;
+			if(props.input == -1){
+				var currentDate = moment(new Date()).format('YYYY-DD-MM');
+				var p1 = new Promise(function(resolve,reject){
+					exports.westfieldClaimService(res, props.profile.claimNumber, function(response){
+						//console.log("this is p1" + response);
+						if(response.lossCause == undefined){
+							//console.log("Invalid response from WestFieldClaimService");
+							reject(response);
+						}else{
+							props.lossCause 		= response.lossCause;
+							props.policyNumber 		= response.policyNumber;
+							resolve(props);
+						}
+					});
+				});
+				
+				var p2 =  new Promise(function(resolve,reject){
+					//console.log("policy is " + props.profile.policynumber);
+					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01", function(policyDetails){
+						//console.log("this is p2" + policyDetails);
+						if(policyDetails.namedInsured == undefined){
+							//console.log("Invalid response from retrievePolicyDetailsForVendor");
+							reject(policyDetails);
+						}else{
+							props.namedInsured 		= policyDetails.namedInsured;
+							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
+							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
+							props.driversUnder25 	= policyDetails.driversUnder25;
+							resolve(props);
+						}
+					});
+				});
+				
+				var p3  = new Promise(function(resolve,reject){
+					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01", function(insuredRoles){
+					//console.log("this is p3" + insuredRoles);
+						if(insuredRoles.businessDescription == undefined){
+							//console.log("Invalid response from retrievePolicyDetailsForVendor");
+							reject(insuredRoles);
+						}else{
+							props.businessDescription 	= insuredRoles.businessDescription;
+							props.businessState 		= insuredRoles.businessState;
+							props.businessCity 			= insuredRoles.businessCity;
+							props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
+							props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
+							props.industryterm = insuredRoles.industryterm;
+							props.skilltradebusiness = insuredRoles.skilltradebusiness;
+							resolve(props);
+						}
+					});
+				});
+				
+				Promise.all([p1,p2,p3]).then(function(results){
+					//console.log(results);
+					//console.log("this is props" + props);
+					doWatsonConversation(props,function(conversationResp){
+						callback(conversationResp);
+					});
+				}).catch(function (error) { 
+					console.error(error);
+					callback(error);
+				});
+			}else{
+				doWatsonConversation(props,function(conversationResp){
+					callback(conversationResp);
+				});
+			}
+		}
+		
+	});
+	
+}
+
 function doWatsonConversation(props, callback){
 	
 	var profile = props.profile;
@@ -540,7 +625,7 @@ function doWatsonConversation(props, callback){
 	//console.log(props);
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "67f89d5a-0917-48e3-a340-e76149eb0c21";
+	workspace_id = "5855775d-71e1-4d2a-9a8c-ac05c682a6c0";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 		var test  = JSON.stringify(props.payload.context);
@@ -593,6 +678,110 @@ function doWatsonConversation(props, callback){
 	var conversation = new ConversationV1({
 	  username: 'cc11f6ea-6f0a-4081-a364-ee65accea693',
 	  password: '7aHZsqccYiuR',
+	  version_date: '2017-04-21'
+	});
+	
+	conversation.message({
+	  context : context,
+	  input: { text: temp_msg },
+	  workspace_id: workspace_id
+	 }, function(err, res_body)  {
+		 if (err != null || res_body.output == null || res_body.output == undefined) {
+		   console.error(err);
+		   callback({
+				"responsecode": "500",
+				"message": "Error in Watson conversation"
+			});
+		 } else {
+		  props.payload = temp_msg;
+		  var Watson_response = JSON.stringify(res_body.output.text);
+		  console.log(Watson_response);
+		  var Watson_context = JSON.stringify(res_body.context);
+		  console.log(Watson_context);
+		  var watsonResp = {
+					text: Watson_response.substring(2,Watson_response.length-2),
+					username: "Watson",
+					context: Watson_context
+		  };
+		  var updateUserProfileRequestBody = {};
+		  updateUserProfileRequestBody = profile;
+		  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
+		  updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
+	      updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
+		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
+		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
+		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+		  updateUserProfileRequestBody._rev = profile._rev;
+		  updateUserProfileRequestBody.id = profile._id;
+		  var res;
+		   exports.updateUserProfile(res, updateUserProfileRequestBody, function(updateUserResp){
+				callback(watsonResp);
+			});
+		}
+	});
+}
+
+function doWatsonConversation2(props, callback){
+	
+	var profile = props.profile;
+	props.payload = props.details;
+
+	//console.log(props);
+	var temp_msg = props.payload.input;
+	var username = profile.username;
+	workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
+	var context = JSON.parse("{}");
+	if (typeof(props.payload.context) != "undefined"){
+		var test  = JSON.stringify(props.payload.context);
+		if (test.length > 2) {
+			try{
+				context = JSON.parse(props.payload.context);
+			}catch(err){
+				console.error(err);
+				callback({
+					"responsecode": "500",
+					"message": "Failed to parse context information"
+				});
+			}
+		}
+	}
+
+	context.SupplyPhones = profile.providesCellPhones;
+	context.User_First_Name = profile.preferredfirstname;
+	context.Subtopic_Completion = profile.completedsubtopics;
+	context.Topic = profile.lastcompletedtopic;
+	context.Subtopic = profile.lastcompletedsubtopic;
+	context.Topic_Completion =profile.completedtopics;
+
+
+	context.Loss_Cause = props.lossCause;
+	context.Fault_Rating = profile.claimfaultrating;
+
+
+	if(temp_msg == "-1"){
+	context.Named_Insured = props.namedInsured;
+	context.Business_Desc = props.businessDescription;
+	context.Num_Vehicles =  props.numberOfVehicles;
+	context.Num_Drivers = props.numberOfDrivers;
+	context.Industry = "Industry";
+	context.Business_State = props.businessState;
+	context.Business_City = props.businessCity;
+
+	//context.DriversUnder25 =flow.get('driversUnder25');
+	context.DriversUnder25 ="0";
+	
+	context.Business_Desc_Sing = props.businessdescriptionsingular;
+	context.Business_Desc_Plural = props.businessdescriptionplural;
+	context.Industry_Term = props.industryterm;
+	context.Skill_Trade_Buisness = props.skilltradebusiness;
+	
+	}
+
+	var ConversationV1 = require('watson-developer-cloud/conversation/v1');
+ 
+	var conversation = new ConversationV1({
+	  username: 'a5ec5e9a-ea00-48e8-ab74-a4c24339af13',
+	  password: '1kwj1PuJcc1a',
 	  version_date: '2017-04-21'
 	});
 	
