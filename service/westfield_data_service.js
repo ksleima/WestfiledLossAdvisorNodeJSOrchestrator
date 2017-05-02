@@ -324,8 +324,9 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							var vehicles = 0;
 							var drivers = 0;
 							var driverslessthan25 = 0;
-							var namedinsured = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"][0]["party"][0]["allNames"][0]["fullName"][0]
-
+							//var namedinsured = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"][0]["party"][0]["allNames"][0]["fullName"][0]
+							var namedinsured = "";
+							var agency = "";
 
 							var finServAgreementComponents = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["financialServicesAgreementComponents"];
 
@@ -358,12 +359,17 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   if(today.getYear()-birthdate.getYear() < 25){
 									   driverslessthan25 = driverslessthan25 + 1;
 								   }
-							   }
+							   }else if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "Insured"){
+										namedinsured = rolesInFinServAgreement[j]["party"][0]["allNames"][0]["fullName"][0];
+							   }else if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "Agency"){
+										agency = rolesInFinServAgreement[j]["party"][0]["allNames"][0]["fullName"][0];
+							   }					 
 							}
 
 							var msg = {};
 							msg = {
 								"namedInsured" : namedinsured,
+								"agency" : agency,
 								"numberOfVehicles" : vehicles,
 								"numberOfDrivers" : drivers,
 								"driversUnder25" : driverslessthan25,
