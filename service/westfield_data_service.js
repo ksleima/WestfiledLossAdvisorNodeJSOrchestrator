@@ -562,7 +562,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 				
 				var p2 =  new Promise(function(resolve,reject){
 					//console.log("policy is " + props.profile.policynumber);
-					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2017-01-01", function(policyDetails){
+					exports.retrievePolicyDetailsForVendor(res, props.profile.policynumber,"2016-01-01", function(policyDetails){
 						//console.log("this is p2" + policyDetails);
 						if(policyDetails.namedInsured == undefined){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
@@ -578,7 +578,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 				});
 				
 				var p3  = new Promise(function(resolve,reject){
-					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2017-01-01", function(insuredRoles){
+					exports.retreiveInsuredRolesForPolicy(res, props.profile.policynumber,"2016-01-01", function(insuredRoles){
 					//console.log("this is p3" + insuredRoles);
 						if(insuredRoles.businessDescription == undefined){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
@@ -824,61 +824,6 @@ function doWatsonConversation2(props, callback){
 		}
 	});
 }
-/* here	
-	props.payload = temp_msg;
-
-
-	var watsonConversationInput =  {
-		context : context,
-		input	:{
-			text: temp_msg
-		},
-		workspace_id: workspace_id
-	}
-	var uri  = "https://gateway.watsonplatform.net/conversation/api/v1/workspaces/"+workspace_id+"/message?version=2017-04-21"
-	request({
-		method: 'POST',
-		uri: uri,
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		json: watsonConversationInput
-	}, function(error, response, res_body) {
-		
-		if(error != null || res_body.output == null || res_body.output == undefined){
-			callback({
-				"responsecode": "500",
-				"message": "Error in Watson conversation"
-			});
-		}else{
-			console.log(error);
-			//console.log(response);
-			console.log(res_body);
-			var Watson_response = JSON.stringify(res_body.output.text);
-			var Watson_context = JSON.stringify(res_body.context);
-			var watsonResp = {
-					text: Watson_response.substring(2,Watson_response.length-2),
-					username: "Watson",
-					context: Watson_context
-				};
-			var updateUserProfileRequestBody = {};
-			updateUserProfileRequestBody = profile;
-			updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
-			updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
-			updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
-			updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
-			updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
-			updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
-			updateUserProfileRequestBody._rev = profile._rev;
-			exports.updateUserProfile(res, profile._id, updateUserProfileRequestBody, function(updateUserResp){
-				callback(watsonResp);
-			});
-		}
-		
-		
-	});
-}
-end here */
 
 exports.resetCache = function(res,key,callback){
 	if(key == 'ALL'){
