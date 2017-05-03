@@ -641,7 +641,7 @@ function doWatsonConversation(props, callback){
 		var test  = JSON.stringify(props.payload.context);
 		if (test.length > 2) {
 			try{
-				context = JSON.parse(props.payload.context);
+				context = JSON.parse(test);
 			}catch(err){
 				console.error(err);
 				callback({
