@@ -581,7 +581,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
-							props.namedInsured 		= policyDetails.namedInsured;
+							props.namedInsured 		= escape(policyDetails.namedInsured);
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
@@ -670,8 +670,7 @@ function doWatsonConversation(props, callback){
 
 
 	if(temp_msg == "-1"){
-//	context.Named_Insured = props.namedInsured;
-	context.Named_Insured = "Kamal";
+	context.Named_Insured = props.namedInsured;
 	context.Business_Desc = props.businessDescription;
 	context.Num_Vehicles =  props.numberOfVehicles;
 	context.Num_Drivers = props.numberOfDrivers;
@@ -835,7 +834,7 @@ function doWatsonConversation2(props, callback){
 		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
 		  if(props.agency != undefined){
-			updateUserProfileRequestBody.agency = "Agency";
+			updateUserProfileRequestBody.agency = props.agency;
 		  }
 		  updateUserProfileRequestBody._rev = profile._rev;
 		  updateUserProfileRequestBody.id = profile._id;
