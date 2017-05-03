@@ -581,6 +581,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
+							props.agency			= policyDetails.agency;
 							resolve(props);
 						}
 					});
