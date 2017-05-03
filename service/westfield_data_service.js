@@ -666,7 +666,8 @@ function doWatsonConversation(props, callback){
 
 
 	if(temp_msg == "-1"){
-	context.Named_Insured = props.namedInsured;
+//	context.Named_Insured = props.namedInsured;
+	context.Named_Insured = "Kamal";
 	context.Business_Desc = props.businessDescription;
 	context.Num_Vehicles =  props.numberOfVehicles;
 	context.Num_Drivers = props.numberOfDrivers;
