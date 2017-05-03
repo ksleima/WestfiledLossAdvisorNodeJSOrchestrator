@@ -496,6 +496,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
+							props.agency			= policyDetails.agency;
 							resolve(props);
 						}
 					});
@@ -831,7 +832,7 @@ function doWatsonConversation2(props, callback){
 		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
 		  if(props.agency != undefined){
-			updateUserProfileRequestBody.agency = props.agency;
+			updateUserProfileRequestBody.agency = "Agency";
 		  }
 		  updateUserProfileRequestBody._rev = profile._rev;
 		  updateUserProfileRequestBody.id = profile._id;
