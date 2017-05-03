@@ -720,6 +720,9 @@ function doWatsonConversation(props, callback){
 		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
 		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+		  if(props.agency != undefined){
+			updateUserProfileRequestBody.agency = props.agency;
+		  }
 		  updateUserProfileRequestBody._rev = profile._rev;
 		  updateUserProfileRequestBody.id = profile._id;
 		  var res;
@@ -824,6 +827,9 @@ function doWatsonConversation2(props, callback){
 		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
 		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+		  if(props.agency != undefined){
+			updateUserProfileRequestBody.agency = props.agency;
+		  }
 		  updateUserProfileRequestBody._rev = profile._rev;
 		  updateUserProfileRequestBody.id = profile._id;
 		  var res;
