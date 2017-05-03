@@ -98,6 +98,9 @@ exports.updateUserProfile = function(res, details, callback){
 			}
 			if(details.voice != undefined){
 				profile.voice = details.voice;
+			}
+			if(details.agency != undefined){
+				profile.agency = details.agency;
 			}		
 			request({
 				method: 'PUT',
