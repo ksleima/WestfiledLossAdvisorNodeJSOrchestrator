@@ -384,6 +384,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								"numberOfVehicles" : vehicles,
 								"numberOfDrivers" : drivers,
 								"driversUnder25" : driverslessthan25,
+								"hasTrailers" : "0"
 							};
 							callback(msg);
 						}
@@ -512,6 +513,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 							if(policyDetails.agency != undefined){
 								props.agency 		= policyDetails.agency.replace("&", "AND");
 							}
+							props.hasTrailers 		= policyDetails.hasTrailers;
 							resolve(props);
 						}
 					});
@@ -526,6 +528,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 						}else{
 							props.businessDescription 	= insuredRoles.businessDescription;
 							props.businessState 		= insuredRoles.businessState;
+							props.businessStateName 	= insuredRoles.businessStateName;
 							props.businessCity 			= insuredRoles.businessCity;
 							props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
 							props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
@@ -602,6 +605,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							if(policyDetails.agency != undefined){
 								props.agency 		= policyDetails.agency.replace("&", "AND");
 							}
+							props.hasTrailers 		= policyDetails.hasTrailers;
 							resolve(props);
 						}
 					});
@@ -616,6 +620,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 						}else{
 							props.businessDescription 	= insuredRoles.businessDescription;
 							props.businessState 		= insuredRoles.businessState;
+							props.businessStateName 	= insuredRoles.businessStateName;
 							props.businessCity 			= insuredRoles.businessCity;
 							props.businessdescriptionsingular = insuredRoles.businessdescriptionsingular;
 							props.businessdescriptionplural = insuredRoles.businessdescriptionplural;
@@ -679,7 +684,11 @@ function doWatsonConversation(props, callback){
 	context.Topic = profile.lastcompletedtopic;
 	context.Subtopic = profile.lastcompletedsubtopic;
 	context.Topic_Completion =profile.completedtopics;
-
+	if(profile.topicInprogress == undefined){
+		context.In_Progress = "";
+	}else{
+		context.In_Progress =profile.topicInprogress;
+	}
 
 	context.Loss_Cause = props.lossCause;
 	context.Fault_Rating = profile.claimfaultrating;
@@ -692,6 +701,8 @@ function doWatsonConversation(props, callback){
 	context.Num_Drivers = props.numberOfDrivers;
 	context.Industry = "Industry";
 	context.Business_State = props.businessState;
+	context.Business_State_Name = props.businessStateName;
+	
 	context.Business_City = props.businessCity;
 
 	//context.DriversUnder25 =flow.get('driversUnder25');
@@ -702,6 +713,7 @@ function doWatsonConversation(props, callback){
 	context.Industry_Term = props.industryterm;
 	context.Skill_Trade_Buisness = props.skilltradebusiness;
 	
+	context.Has_Trailers = props.hasTrailers;
 	}
 
 	var ConversationV1 = require('watson-developer-cloud/conversation/v1');
@@ -742,6 +754,7 @@ function doWatsonConversation(props, callback){
 		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
 		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+		  updateUserProfileRequestBody.topicInprogress = res_body.context.In_Progress;
 		  if(props.agency != undefined){
 			updateUserProfileRequestBody.agency = props.agency;
 		  }
@@ -786,7 +799,11 @@ function doWatsonConversation2(props, callback){
 	context.Topic = profile.lastcompletedtopic;
 	context.Subtopic = profile.lastcompletedsubtopic;
 	context.Topic_Completion =profile.completedtopics;
-
+	if(profile.topicInprogress == undefined){
+		context.In_Progress = "";
+	}else{
+		context.In_Progress =profile.topicInprogress;
+	}
 
 	context.Loss_Cause = props.lossCause;
 	context.Fault_Rating = profile.claimfaultrating;
@@ -799,6 +816,7 @@ function doWatsonConversation2(props, callback){
 	context.Num_Drivers = props.numberOfDrivers;
 	context.Industry = "Industry";
 	context.Business_State = props.businessState;
+	context.Business_State_Name = props.businessStateName;
 	context.Business_City = props.businessCity;
 
 	//context.DriversUnder25 =flow.get('driversUnder25');
@@ -809,6 +827,7 @@ function doWatsonConversation2(props, callback){
 	context.Industry_Term = props.industryterm;
 	context.Skill_Trade_Buisness = props.skilltradebusiness;
 	
+	context.Has_Trailers = props.hasTrailers;
 	}
 
 	var ConversationV1 = require('watson-developer-cloud/conversation/v1');
@@ -849,6 +868,7 @@ function doWatsonConversation2(props, callback){
 		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
 		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
 		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+		  updateUserProfileRequestBody.topicInprogress = res_body.context.In_Progress;
 		  if(props.agency != undefined){
 			updateUserProfileRequestBody.agency = props.agency;
 		  }
