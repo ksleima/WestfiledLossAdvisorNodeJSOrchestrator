@@ -581,7 +581,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
-							if(props.namedInsured != undefined){
+							if(policyDetails.namedInsured != undefined){
 								props.namedInsured 		= policyDetails.namedInsured.replace("&", "And");
 							}
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
