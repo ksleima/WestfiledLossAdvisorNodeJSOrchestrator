@@ -101,7 +101,11 @@ exports.updateUserProfile = function(res, details, callback){
 			}
 			if(details.agency != undefined){
 				profile.agency = details.agency;
-			}		
+			}
+i			f(details.topicInprogress != undefined){
+				profile.topicInprogress = details.topicInprogress;
+			}
+			
 			request({
 				method: 'PUT',
 				uri: uri,
