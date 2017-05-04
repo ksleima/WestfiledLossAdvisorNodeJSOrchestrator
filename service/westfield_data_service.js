@@ -495,11 +495,15 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
-							props.namedInsured 		= escape(policyDetails.namedInsured);
+							if(policyDetails.namedInsured != undefined){
+								props.namedInsured 		= policyDetails.namedInsured.replace("&", "AND");
+							}
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
-							props.agency			= policyDetails.agency;
+							if(policyDetails.agency != undefined){
+								props.agency 		= policyDetails.agency.replace("&", "AND");
+							}
 							resolve(props);
 						}
 					});
@@ -582,12 +586,14 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							reject(policyDetails);
 						}else{
 							if(policyDetails.namedInsured != undefined){
-								props.namedInsured 		= policyDetails.namedInsured.replace("&", "And");
+								props.namedInsured 		= policyDetails.namedInsured.replace("&", "AND");
 							}
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
-							props.agency			= policyDetails.agency;
+							if(policyDetails.agency != undefined){
+								props.agency 		= policyDetails.agency.replace("&", "AND");
+							}
 							resolve(props);
 						}
 					});
