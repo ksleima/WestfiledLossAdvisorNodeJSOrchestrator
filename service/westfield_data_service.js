@@ -495,7 +495,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
-							props.namedInsured 		= policyDetails.namedInsured;
+							props.namedInsured 		= escape(policyDetails.namedInsured);
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
@@ -581,7 +581,9 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							//console.log("Invalid response from retrievePolicyDetailsForVendor");
 							reject(policyDetails);
 						}else{
-							props.namedInsured 		= escape(policyDetails.namedInsured);
+							if(props.namedInsured != undefined){
+								props.namedInsured 		= policyDetails.namedInsured.replace("&", "And");
+							}
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
