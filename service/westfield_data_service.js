@@ -101,6 +101,21 @@ exports.updateUserProfile = function(res, details, callback){
 			}
 			if(details.agency != undefined){
 				profile.agency = details.agency;
+			}			
+			if(details.providesCellPhones != undefined){
+				profile.providesCellPhones = details.providesCellPhones;
+			}
+			if(details.completedsubtopics != undefined){
+				profile.completedsubtopics = details.completedsubtopics;
+			}
+			if(details.lastcompletedtopic != undefined){
+				profile.lastcompletedtopic = details.lastcompletedtopic;
+			}
+			if(details.lastcompletedsubtopic != undefined){
+				profile.lastcompletedsubtopic = details.lastcompletedsubtopic;
+			}
+			if(details.completedtopics != undefined){
+				profile.completedtopics = details.completedtopics;
 			}
 			if(details.topicInprogress != undefined){
 				profile.topicInprogress = details.topicInprogress;
