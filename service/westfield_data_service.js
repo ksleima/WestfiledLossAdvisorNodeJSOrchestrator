@@ -722,9 +722,9 @@ function doWatsonConversation(props, callback){
 	context.Industry = "Industry";
 	context.Business_State = props.businessState;
 	context.Business_State_Name = props.businessStateName;
-	
 	context.Business_City = props.businessCity;
-
+	context.Extract_Name  = "No";
+	
 	//context.DriversUnder25 =flow.get('driversUnder25');
 	context.DriversUnder25 ="0";
 	
@@ -840,7 +840,8 @@ function doWatsonConversation2(props, callback){
 	context.Business_State = props.businessState;
 	context.Business_State_Name = props.businessStateName;
 	context.Business_City = props.businessCity;
-
+	context.Extract_Name  = "No";
+	
 	//context.DriversUnder25 =flow.get('driversUnder25');
 	context.DriversUnder25 ="0";
 	
