@@ -713,7 +713,7 @@ function doWatsonConversation(props, callback){
 	context.Fault_Rating = profile.claimfaultrating;
 
 	context = extractName(context, temp_msg);
-	console.log("returned context " + JSON.stringify(context, null, 2));
+	console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
 
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
@@ -831,7 +831,7 @@ function doWatsonConversation2(props, callback){
 //
 
 	context = extractName(context, temp_msg);
-	console.log("returned context " + JSON.stringify(context, null, 2));
+	console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
 	
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
@@ -960,7 +960,7 @@ function extractName (context, input){
 			
 		});
 	context.Extract_Name = "No";
-	console.log("context first name should be updated " + JSON.stringify(context, null, 2));
+	console.log("context first name should be updated " + context.User_First_Name);
 	}
 	return context;
 }
