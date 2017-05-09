@@ -712,7 +712,7 @@ function doWatsonConversation(props, callback){
 	context.Loss_Cause = props.lossCause;
 	context.Fault_Rating = profile.claimfaultrating;
 
-//	extractName(context, temp_msg);
+	extractName(context, temp_msg);
 
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
