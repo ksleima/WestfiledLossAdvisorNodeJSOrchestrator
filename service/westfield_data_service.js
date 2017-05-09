@@ -905,7 +905,7 @@ function doWatsonConversation2(props, callback){
 }
 
 function extractName (context, input){
-	If(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
+	if(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 		var natural_language_understanding = new NaturalLanguageUnderstandingV1({
 		  'username': '4a58f828-408e-4eb8-a57e-71726f30c139',
