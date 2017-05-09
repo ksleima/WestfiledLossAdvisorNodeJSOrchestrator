@@ -712,6 +712,7 @@ function doWatsonConversation(props, callback){
 	context.Loss_Cause = props.lossCause;
 	context.Fault_Rating = profile.claimfaultrating;
 
+	extractName(context, temp_msg);
 
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
@@ -828,6 +829,8 @@ function doWatsonConversation2(props, callback){
 	context.Fault_Rating = profile.claimfaultrating;
 //
 
+	extractName(context, temp_msg);
+	
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
 	context.Business_Desc = props.businessDescription;
@@ -899,6 +902,51 @@ function doWatsonConversation2(props, callback){
 			});
 		}
 	});
+}
+
+function extractName (context, input){
+	If(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
+		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
+		var natural_language_understanding = new NaturalLanguageUnderstandingV1({
+		  'username': '4a58f828-408e-4eb8-a57e-71726f30c139',
+		  'password': 'xaE2Qld70v2g',
+		  'version_date': '2017-02-27'
+		});
+		var parameters = {
+		  'text': input,
+		  'features': {
+			'entities': {
+			  'sentiment': true,
+			  'limit': 1
+			}
+		  }
+		};
+		natural_language_understanding.analyze(parameters, function(err, response) {
+		  if (err)
+			console.error('NLU error:', err);
+		  else{
+		    var foundname = 0;
+			console.log(JSON.stringify(response, null, 2));
+			for(i=0; i < response.entities.length; i++){
+				if(foundname == 0 && response.entities[i].type == "Person"){
+					console.log("first name: " + response.entities[i].type);
+					foundname = 1;
+					context.User_First_Name  = response.entities[i].text;
+				}
+			}
+			if(foundname == 0){
+				var name = imput.split(" ");
+				if(name.length >= 1){
+					context.User_First_Name = name[name.length -1];
+				}
+				else{
+					context.User_First_Name = name[name.length];
+				}
+			}
+		  }
+			
+		});
+	}
 }
 
 exports.resetCache = function(res,key,callback){
