@@ -712,7 +712,7 @@ function doWatsonConversation(props, callback){
 	context.Loss_Cause = props.lossCause;
 	context.Fault_Rating = profile.claimfaultrating;
 
-	extractName(context, temp_msg);
+//	extractName(context, temp_msg);
 
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
@@ -908,7 +908,7 @@ function doWatsonConversation2(props, callback){
 function extractName (context, input){
 	console.log("in extractName");
 	if(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
-	 console.log(context.Extract_Name);
+	 console.log("variable value is " + context.Extract_Name);
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 		var natural_language_understanding = new NaturalLanguageUnderstandingV1({
 		  'username': '4a58f828-408e-4eb8-a57e-71726f30c139',
