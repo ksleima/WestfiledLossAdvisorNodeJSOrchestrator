@@ -926,7 +926,7 @@ function extractName (context, input){
 			}
 		  }
 		};
-		context.User_First_Name = natural_language_understanding.analyze(parameters, function(err, response) {
+		natural_language_understanding.analyze(parameters, function(err, response) {
 		  var UserFirstName = "";
 		  if (err){
 			console.error('NLU error:', err);
