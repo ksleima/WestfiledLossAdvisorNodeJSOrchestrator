@@ -927,7 +927,7 @@ function extractName (context, input){
 			}
 		  }
 		};
-		natural_language_understanding.analyze(parameters, function(err, response) {
+		natural_language_understanding.analyze(parameters, function(err, response, UserFirstName) {
 		  if (err){
 			console.error('NLU error:', err);
 			var name = input.split(" ");
