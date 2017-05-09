@@ -925,20 +925,28 @@ function extractName (context, input){
 		  }
 		};
 		natural_language_understanding.analyze(parameters, function(err, response) {
-		  if (err)
+		  if (err){
 			console.error('NLU error:', err);
+			var name = input.split(" ");
+			if(name.length >= 1){
+				context.User_First_Name = name[name.length -1];
+			}
+			else{
+				context.User_First_Name = name[name.length];
+			}
+		  }
 		  else{
 		    var foundname = 0;
 			console.log(JSON.stringify(response, null, 2));
 			for(i=0; i < response.entities.length; i++){
 				if(foundname == 0 && response.entities[i].type == "Person"){
-					console.log("first name: " + response.entities[i].type);
+					console.log("first name: " + response.entities[i].text);
 					foundname = 1;
 					context.User_First_Name  = response.entities[i].text;
 				}
 			}
 			if(foundname == 0){
-				var name = imput.split(" ");
+				var name = input.split(" ");
 				if(name.length >= 1){
 					context.User_First_Name = name[name.length -1];
 				}
