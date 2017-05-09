@@ -909,7 +909,6 @@ function doWatsonConversation2(props, callback){
 
 function extractName (context, input){
 	console.log("in extractName");
-	var UserFirstName = "";
 	if(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
 	 console.log("variable value is " + context.Extract_Name);
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
@@ -927,7 +926,8 @@ function extractName (context, input){
 			}
 		  }
 		};
-		natural_language_understanding.analyze(parameters, function(err, response, UserFirstName) {
+		context.User_First_Name = natural_language_understanding.analyze(parameters, function(err, response) {
+		  var UserFirstName = "";
 		  if (err){
 			console.error('NLU error:', err);
 			var name = input.split(" ");
@@ -958,10 +958,10 @@ function extractName (context, input){
 				}
 			}
 		  }
-			
+			return UserFirstName;
 		});
 	context.Extract_Name = "No";
-	context.User_First_Name = UserFirstName;
+	//context.User_First_Name = UserFirstName;
 	console.log("context first name should be updated " + context.User_First_Name);
 	}
 	return context;
