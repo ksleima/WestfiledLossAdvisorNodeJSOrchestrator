@@ -957,6 +957,8 @@ function extractName (context, input){
 		  }
 			
 		});
+	context.Extract_Name = "No";
+	console.log("context first name should be updated " + context);
 	}
 	return context;
 }
