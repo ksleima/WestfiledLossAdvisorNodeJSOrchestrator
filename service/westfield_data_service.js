@@ -958,7 +958,6 @@ function extractName (context, input){
 				}
 			}
 		  }
-			return UserFirstName;
 		});
 	context.Extract_Name = "No";
 	//context.User_First_Name = UserFirstName;
