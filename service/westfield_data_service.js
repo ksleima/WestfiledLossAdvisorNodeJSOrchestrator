@@ -909,6 +909,7 @@ function doWatsonConversation2(props, callback){
 
 function extractName (context, input){
 	console.log("in extractName");
+	var UserFirstName = "";
 	if(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
 	 console.log("variable value is " + context.Extract_Name);
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
@@ -931,10 +932,10 @@ function extractName (context, input){
 			console.error('NLU error:', err);
 			var name = input.split(" ");
 			if(name.length >= 1){
-				context.User_First_Name = name[name.length -1];
+				UserFirstName = name[name.length -1];
 			}
 			else{
-				context.User_First_Name = name[name.length];
+				UserFirstName = name[name.length];
 			}
 		  }
 		  else{
@@ -944,22 +945,23 @@ function extractName (context, input){
 				if(foundname == 0 && response.entities[i].type == "Person"){
 					console.log("first name: " + response.entities[i].text);
 					foundname = 1;
-					context.User_First_Name  = response.entities[i].text;
+					UserFirstName  = response.entities[i].text;
 				}
 			}
 			if(foundname == 0){
 				var name = input.split(" ");
 				if(name.length >= 1){
-					context.User_First_Name = name[name.length -1];
+					UserFirstName = name[name.length -1];
 				}
 				else{
-					context.User_First_Name = name[name.length];
+					UserFirstName = name[name.length];
 				}
 			}
 		  }
 			
 		});
 	context.Extract_Name = "No";
+	context.User_First_Name = UserFirstName;
 	console.log("context first name should be updated " + context.User_First_Name);
 	}
 	return context;
