@@ -713,82 +713,86 @@ function doWatsonConversation(props, callback){
 	context.Fault_Rating = profile.claimfaultrating;
 
 	extractName(context, temp_msg, function(resp){
-		context.User_First_Name = resp.User_First_Name;
-		console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
-	});
-
-	if(temp_msg == "-1"){
-	context.Named_Insured = props.namedInsured;
-	context.Business_Desc = props.businessDescription;
-	context.Num_Vehicles =  props.numberOfVehicles;
-	context.Num_Drivers = props.numberOfDrivers;
-	context.Industry = "Industry";
-	context.Business_State = props.businessState;
-	context.Business_State_Name = props.businessStateName;
-	context.Business_City = props.businessCity;
-	context.Extract_Name  = "No";
-	
-	//context.DriversUnder25 =flow.get('driversUnder25');
-	context.DriversUnder25 ="0";
-	
-	context.Business_Desc_Sing = props.businessdescriptionsingular;
-	context.Business_Desc_Plural = props.businessdescriptionplural;
-	context.Industry_Term = props.industryterm;
-	context.Skill_Trade_Buisness = props.skilltradebusiness;
-	
-	context.Has_Trailers = props.hasTrailers;
-	}
-
-	var ConversationV1 = require('watson-developer-cloud/conversation/v1');
- 
-	var conversation = new ConversationV1({
-	  username: 'cc11f6ea-6f0a-4081-a364-ee65accea693',
-	  password: '7aHZsqccYiuR',
-	  version_date: '2017-04-21'
-	});
-	
-	conversation.message({
-	  context : context,
-	  input: { text: temp_msg },
-	  workspace_id: workspace_id
-	 }, function(err, res_body)  {
-		 if (err != null || res_body.output == null || res_body.output == undefined) {
-		   console.error(err);
-		   callback({
-				"responsecode": "500",
-				"message": "Error in Watson conversation"
-			});
-		 } else {
-		  props.payload = temp_msg;
-		  var Watson_response = JSON.stringify(res_body.output.text);
-		  console.log(Watson_response);
-		  var Watson_context = JSON.stringify(res_body.context);
-		  console.log(Watson_context);
-		  var watsonResp = {
-					text: Watson_response.substring(2,Watson_response.length-2),
-					username: "Watson",
-					context: Watson_context
-		  };
-		  var updateUserProfileRequestBody = {};
-		  updateUserProfileRequestBody = profile;
-		  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
-		  updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
-	      updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
-		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
-		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
-		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
-		  updateUserProfileRequestBody.topicInprogress = res_body.context.In_Progress;
-		  if(props.agency != undefined){
-			updateUserProfileRequestBody.agency = props.agency;
-		  }
-		  updateUserProfileRequestBody._rev = profile._rev;
-		  updateUserProfileRequestBody.id = profile._id;
-		  var res;
-		   exports.updateUserProfile(res, updateUserProfileRequestBody, function(updateUserResp){
-				callback(watsonResp);
-			});
+		if(resp.User_First_Name != undefined){
+			context.User_First_Name = resp.User_First_Name;
+			context.Extract_Name = resp.Extract_Name;
+			console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
 		}
+		if(temp_msg == "-1"){
+			context.Named_Insured = props.namedInsured;
+			context.Business_Desc = props.businessDescription;
+			context.Num_Vehicles =  props.numberOfVehicles;
+			context.Num_Drivers = props.numberOfDrivers;
+			context.Industry = "Industry";
+			context.Business_State = props.businessState;
+			context.Business_State_Name = props.businessStateName;
+			context.Business_City = props.businessCity;
+			context.Extract_Name  = "No";
+			
+			//context.DriversUnder25 =flow.get('driversUnder25');
+			context.DriversUnder25 ="0";
+			
+			context.Business_Desc_Sing = props.businessdescriptionsingular;
+			context.Business_Desc_Plural = props.businessdescriptionplural;
+			context.Industry_Term = props.industryterm;
+			context.Skill_Trade_Buisness = props.skilltradebusiness;
+			
+			context.Has_Trailers = props.hasTrailers;
+		}
+
+		var ConversationV1 = require('watson-developer-cloud/conversation/v1');
+	 
+		var conversation = new ConversationV1({
+		  username: 'cc11f6ea-6f0a-4081-a364-ee65accea693',
+		  password: '7aHZsqccYiuR',
+		  version_date: '2017-04-21'
+		});
+		
+		conversation.message({
+		  context : context,
+		  input: { text: temp_msg },
+		  workspace_id: workspace_id
+		 }, function(err, res_body)  {
+			 if (err != null || res_body.output == null || res_body.output == undefined) {
+			   console.error(err);
+			   callback({
+					"responsecode": "500",
+					"message": "Error in Watson conversation"
+				});
+			 } else {
+			  props.payload = temp_msg;
+			  var Watson_response = JSON.stringify(res_body.output.text);
+			  console.log(Watson_response);
+			  var Watson_context = JSON.stringify(res_body.context);
+			  console.log(Watson_context);
+			  var watsonResp = {
+						text: Watson_response.substring(2,Watson_response.length-2),
+						username: "Watson",
+						context: Watson_context
+			  };
+			  var updateUserProfileRequestBody = {};
+			  updateUserProfileRequestBody = profile;
+			  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
+			  updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
+			  updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
+			  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
+			  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
+			  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+			  updateUserProfileRequestBody.topicInprogress = res_body.context.In_Progress;
+			  if(props.agency != undefined){
+				updateUserProfileRequestBody.agency = props.agency;
+			  }
+			  updateUserProfileRequestBody._rev = profile._rev;
+			  updateUserProfileRequestBody.id = profile._id;
+			  var res;
+			   exports.updateUserProfile(res, updateUserProfileRequestBody, function(updateUserResp){
+					callback(watsonResp);
+				});
+			}
+		});
 	});
+
+	
 }
 
 function doWatsonConversation2(props, callback){
@@ -833,83 +837,86 @@ function doWatsonConversation2(props, callback){
 //
 
 	extractName(context, temp_msg, function(resp){
-		context.User_First_Name = resp.User_First_Name;
-		console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
-	});
-	
-	
-	if(temp_msg == "-1"){
-	context.Named_Insured = props.namedInsured;
-	context.Business_Desc = props.businessDescription;
-	context.Num_Vehicles =  props.numberOfVehicles;
-	context.Num_Drivers = props.numberOfDrivers;
-	context.Industry = "Industry";
-	context.Business_State = props.businessState;
-	context.Business_State_Name = props.businessStateName;
-	context.Business_City = props.businessCity;
-	context.Extract_Name  = "No";
-	
-	//context.DriversUnder25 =flow.get('driversUnder25');
-	context.DriversUnder25 ="0";
-	
-	context.Business_Desc_Sing = props.businessdescriptionsingular;
-	context.Business_Desc_Plural = props.businessdescriptionplural;
-	context.Industry_Term = props.industryterm;
-	context.Skill_Trade_Buisness = props.skilltradebusiness;
-	
-	context.Has_Trailers = props.hasTrailers;
-	}
-
-	var ConversationV1 = require('watson-developer-cloud/conversation/v1');
- 
-	var conversation = new ConversationV1({
-	  username: 'a5ec5e9a-ea00-48e8-ab74-a4c24339af13',
-	  password: '1kwj1PuJcc1a',
-	  version_date: '2017-04-21'
-	});
-	
-	conversation.message({
-	  context : context,
-	  input: { text: temp_msg },
-	  workspace_id: workspace_id
-	 }, function(err, res_body)  {
-		 if (err != null || res_body.output == null || res_body.output == undefined) {
-		   console.error(err);
-		   callback({
-				"responsecode": "500",
-				"message": "Error in Watson conversation"
-			});
-		 } else {
-		  props.payload = temp_msg;
-		  var Watson_response = JSON.stringify(res_body.output.text);
-		  console.log(Watson_response);
-		  var Watson_context = JSON.stringify(res_body.context);
-		  console.log(Watson_context);
-		  var watsonResp = {
-					text: Watson_response.substring(2,Watson_response.length-2),
-					username: "Watson",
-					context: Watson_context
-		  };
-		  var updateUserProfileRequestBody = {};
-		  updateUserProfileRequestBody = profile;
-		  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
-		  updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
-	      updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
-		  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
-		  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
-		  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
-		  updateUserProfileRequestBody.topicInprogress = res_body.context.In_Progress;
-		  if(props.agency != undefined){
-			updateUserProfileRequestBody.agency = props.agency;
-		  }
-		  updateUserProfileRequestBody._rev = profile._rev;
-		  updateUserProfileRequestBody.id = profile._id;
-		  var res;
-		   exports.updateUserProfile(res, updateUserProfileRequestBody, function(updateUserResp){
-				callback(watsonResp);
-			});
+		if(resp.User_First_Name != undefined){
+			context.User_First_Name = resp.User_First_Name;
+			context.Extract_Name = resp.Extract_Name;
+			console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
 		}
+		
+		if(temp_msg == "-1"){
+			context.Named_Insured = props.namedInsured;
+			context.Business_Desc = props.businessDescription;
+			context.Num_Vehicles =  props.numberOfVehicles;
+			context.Num_Drivers = props.numberOfDrivers;
+			context.Industry = "Industry";
+			context.Business_State = props.businessState;
+			context.Business_State_Name = props.businessStateName;
+			context.Business_City = props.businessCity;
+			context.Extract_Name  = "No";
+			
+			//context.DriversUnder25 =flow.get('driversUnder25');
+			context.DriversUnder25 ="0";
+			
+			context.Business_Desc_Sing = props.businessdescriptionsingular;
+			context.Business_Desc_Plural = props.businessdescriptionplural;
+			context.Industry_Term = props.industryterm;
+			context.Skill_Trade_Buisness = props.skilltradebusiness;
+			
+			context.Has_Trailers = props.hasTrailers;
+		}
+
+		var ConversationV1 = require('watson-developer-cloud/conversation/v1');
+	 
+		var conversation = new ConversationV1({
+		  username: 'a5ec5e9a-ea00-48e8-ab74-a4c24339af13',
+		  password: '1kwj1PuJcc1a',
+		  version_date: '2017-04-21'
+		});
+		
+		conversation.message({
+		  context : context,
+		  input: { text: temp_msg },
+		  workspace_id: workspace_id
+		 }, function(err, res_body)  {
+			 if (err != null || res_body.output == null || res_body.output == undefined) {
+			   console.error(err);
+			   callback({
+					"responsecode": "500",
+					"message": "Error in Watson conversation"
+				});
+			 } else {
+			  props.payload = temp_msg;
+			  var Watson_response = JSON.stringify(res_body.output.text);
+			  console.log(Watson_response);
+			  var Watson_context = JSON.stringify(res_body.context);
+			  console.log(Watson_context);
+			  var watsonResp = {
+						text: Watson_response.substring(2,Watson_response.length-2),
+						username: "Watson",
+						context: Watson_context
+			  };
+			  var updateUserProfileRequestBody = {};
+			  updateUserProfileRequestBody = profile;
+			  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
+			  updateUserProfileRequestBody.providesCellPhones = res_body.context.SupplyPhones;
+			  updateUserProfileRequestBody.completedsubtopics = res_body.context.Subtopic_Completion;
+			  updateUserProfileRequestBody.lastcompletedtopic = res_body.context.Topic;
+			  updateUserProfileRequestBody.lastcompletedsubtopic = res_body.context.Subtopic;
+			  updateUserProfileRequestBody.completedtopics = res_body.context.Topic_Completion;
+			  updateUserProfileRequestBody.topicInprogress = res_body.context.In_Progress;
+			  if(props.agency != undefined){
+				updateUserProfileRequestBody.agency = props.agency;
+			  }
+			  updateUserProfileRequestBody._rev = profile._rev;
+			  updateUserProfileRequestBody.id = profile._id;
+			  var res;
+			   exports.updateUserProfile(res, updateUserProfileRequestBody, function(updateUserResp){
+					callback(watsonResp);
+				});
+			}
+		});
 	});
+	
 }
 
 function extractName (context, input, callback){
@@ -964,15 +971,17 @@ function extractName (context, input, callback){
 			}
 		  }
 			callback({
-				"User_First_Name": UserFirstName
+				"User_First_Name": UserFirstName,
+				"Extract_Name" : "No"
 			});
 		});
-	context.Extract_Name = "No";
-	//context.User_First_Name = UserFirstName;
-	console.log("context first name should be updated " + context.User_First_Name);
-
+		context.Extract_Name = "No";
+		//context.User_First_Name = UserFirstName;
+		console.log("context first name should be updated " + context.User_First_Name);
+	}else{
+		callback({});
 	}
-} 
+}
 
 exports.resetCache = function(res,key,callback){
 	if(key == 'ALL'){
