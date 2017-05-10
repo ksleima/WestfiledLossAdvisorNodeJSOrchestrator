@@ -963,15 +963,16 @@ function extractName (context, input, callback){
 				}
 			}
 		  }
+			callback({
+				"User_First_Name": UserFirstName
+			});
 		});
 	context.Extract_Name = "No";
 	//context.User_First_Name = UserFirstName;
 	console.log("context first name should be updated " + context.User_First_Name);
-	callback({
-		"User_First_Name": UserFirstName
-	});
+
 	}
-}
+} 
 
 exports.resetCache = function(res,key,callback){
 	if(key == 'ALL'){
