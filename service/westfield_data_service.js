@@ -712,8 +712,10 @@ function doWatsonConversation(props, callback){
 	context.Loss_Cause = props.lossCause;
 	context.Fault_Rating = profile.claimfaultrating;
 
-	context = extractName(context, temp_msg);
-	console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
+	extractName(context, temp_msg, function(resp){
+		context.User_First_Name = resp.User_First_Name;
+		console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
+	});
 
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
@@ -830,8 +832,11 @@ function doWatsonConversation2(props, callback){
 	context.Fault_Rating = profile.claimfaultrating;
 //
 
-	context = extractName(context, temp_msg);
-	console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
+	extractName(context, temp_msg, function(resp){
+		context.User_First_Name = resp.User_First_Name;
+		console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
+	});
+	
 	
 	if(temp_msg == "-1"){
 	context.Named_Insured = props.namedInsured;
@@ -907,7 +912,7 @@ function doWatsonConversation2(props, callback){
 	});
 }
 
-function extractName (context, input){
+function extractName (context, input, callback){
 	console.log("in extractName");
 	if(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
 	 console.log("variable value is " + context.Extract_Name);
@@ -962,8 +967,10 @@ function extractName (context, input){
 	context.Extract_Name = "No";
 	//context.User_First_Name = UserFirstName;
 	console.log("context first name should be updated " + context.User_First_Name);
+	callback({
+		"User_First_Name": UserFirstName
+	});
 	}
-	return context;
 }
 
 exports.resetCache = function(res,key,callback){
