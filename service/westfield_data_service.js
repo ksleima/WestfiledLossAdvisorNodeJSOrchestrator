@@ -661,6 +661,10 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 					callback(error);
 				});
 			}else{
+				
+				
+				
+				
 				doWatsonConversation2(props,function(conversationResp){
 					callback(conversationResp);
 				});
