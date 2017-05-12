@@ -729,7 +729,7 @@ function doWatsonConversation(props, callback){
 	context.Last_Meeting_Date = profile.lastlogin;
 	context.Logins_Count = profile.loginCount;
 	var currentDate = moment(new Date());
-	var lastLoginDate = moment(profile.lastlogin, "MM/DD/YY"));
+	var lastLoginDate = moment(profile.lastlogin, "MM/DD/YY");
 	var diffDays = currentDate.diff(lastLoginDate, 'days');
 	context.Last_Meeting_Days = diffDays;
 
@@ -860,7 +860,7 @@ function doWatsonConversation2(props, callback){
 	context.Last_Meeting_Date = profile.lastlogin;
 	context.Logins_Count = profile.loginCount;
 	var currentDate = moment(new Date());
-	var lastLoginDate = moment(profile.lastlogin, "MM/DD/YY"));
+	var lastLoginDate = moment(profile.lastlogin, "MM/DD/YY");
 	var diffDays = currentDate.diff(lastLoginDate, 'days');
 	context.Last_Meeting_Days = diffDays;
 
