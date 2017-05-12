@@ -673,6 +673,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 
 function doWatsonConversation(props, callback){
 	
+	console.log("Here in doWatsonConversation");
 	var profile = props.profile;
 	props.payload = props.details;
 
