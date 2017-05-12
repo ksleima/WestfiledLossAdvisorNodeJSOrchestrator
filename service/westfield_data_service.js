@@ -47,7 +47,7 @@ exports.authenticate = function(res, details, callback){
 					updateRequestBody.loginCount = 1;
 				}
 				updateRequestBody.lastlogin = currentDate;
-				updateRequestBody.id = res_body._id;
+				updateRequestBody.id = res_body.docs[0]._id;
 				console.log("Added login data " + JSON.stringify(updateRequestBody, null, 2));
 				var res;
 			    exports.updateUserProfile(res, updateRequestBody, function(updateUserResp){});
