@@ -728,7 +728,10 @@ function doWatsonConversation(props, callback){
 	
 	context.Last_Meeting_Date = profile.lastlogin;
 	context.Logins_Count = profile.loginCount;
-//	context.Last_Meeting_Days = today - lastLoginDay;
+	var currentDate = moment(new Date());
+	var lastLoginDate = moment(profile.lastlogin, "MM/DD/YY"));
+	var diffDays = currentDate.diff(lastLoginDate, 'days');
+	context.Last_Meeting_Days = diffDays;
 
 	if(profile.topicInprogress == undefined){
 		context.In_Progress = "";
@@ -856,7 +859,10 @@ function doWatsonConversation2(props, callback){
 	
 	context.Last_Meeting_Date = profile.lastlogin;
 	context.Logins_Count = profile.loginCount;
-//	context.Last_Meeting_Days = today - lastLoginDay;
+	var currentDate = moment(new Date());
+	var lastLoginDate = moment(profile.lastlogin, "MM/DD/YY"));
+	var diffDays = currentDate.diff(lastLoginDate, 'days');
+	context.Last_Meeting_Days = diffDays;
 
 	
 	if(profile.topicInprogress == undefined){
