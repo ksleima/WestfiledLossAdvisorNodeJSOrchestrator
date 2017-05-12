@@ -38,6 +38,17 @@ exports.authenticate = function(res, details, callback){
 				"message": "User not found with username and password combination"
 			});
 		}else{
+			if(res_body._id != undefined){
+				var currentDate = moment(new Date()).format('MM/DD/YY');
+				if(res_body.loginCount != undefined){
+					res_body.loginCount = res_body.loginCount + 1;
+				}else{
+					res_body.loginCount = 1;
+				}
+				res_body.lastlogin = currentDate;
+				var res;
+			    exports.updateUserProfile(res, res_body, function(updateUserResp){});
+			}
 			callback(res_body);
 		}
 		
@@ -119,6 +130,9 @@ exports.updateUserProfile = function(res, details, callback){
 			}
 			if(details.topicInprogress != undefined){
 				profile.topicInprogress = details.topicInprogress;
+			}
+			if(details.loginCount != undefined){
+				profile.loginCount = details.loginCount;
 			}
 			
 			request({
