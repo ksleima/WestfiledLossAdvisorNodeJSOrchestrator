@@ -725,9 +725,11 @@ function doWatsonConversation(props, callback){
 	context.Subtopic = profile.lastcompletedsubtopic;
 	context.Topic_Completion =profile.completedtopics;
 	
-//	context.Last_Meeting_Date = profile.lastLoginDay;
-//	context.Last_Meeting_Days = today - lastLoginDay;
 	
+	context.Last_Meeting_Date = profile.lastlogin;
+	context.Logins_Count = profile.loginCount;
+//	context.Last_Meeting_Days = today - lastLoginDay;
+
 	if(profile.topicInprogress == undefined){
 		context.In_Progress = "";
 	}else{
@@ -852,8 +854,10 @@ function doWatsonConversation2(props, callback){
 	context.Subtopic = profile.lastcompletedsubtopic;
 	context.Topic_Completion =profile.completedtopics;
 	
-//	context.Last_Meeting_Date = profile.lastLoginDay;
+	context.Last_Meeting_Date = profile.lastlogin;
+	context.Logins_Count = profile.loginCount;
 //	context.Last_Meeting_Days = today - lastLoginDay;
+
 	
 	if(profile.topicInprogress == undefined){
 		context.In_Progress = "";
