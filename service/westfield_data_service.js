@@ -804,7 +804,7 @@ function doWatsonConversation2(props, callback){
 	var profile = props.profile;
 	props.payload = props.details;
 
-	//console.log(props);
+	console.log("Here in doWatsonConversation2");
 	var temp_msg = props.payload.input;
 	var username = profile.username;
 	workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
