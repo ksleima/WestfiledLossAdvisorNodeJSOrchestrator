@@ -661,7 +661,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 					callback(error);
 				});
 			}else{
-				doWatsonConversation(props,function(conversationResp){
+				doWatsonConversation2(props,function(conversationResp){
 					callback(conversationResp);
 				});
 			}
@@ -703,6 +703,10 @@ function doWatsonConversation(props, callback){
 	context.Topic = profile.lastcompletedtopic;
 	context.Subtopic = profile.lastcompletedsubtopic;
 	context.Topic_Completion =profile.completedtopics;
+	
+//	context.Last_Meeting_Date = profile.lastLoginDay;
+//	context.Last_Meeting_Days = today - lastLoginDay;
+	
 	if(profile.topicInprogress == undefined){
 		context.In_Progress = "";
 	}else{
@@ -826,6 +830,10 @@ function doWatsonConversation2(props, callback){
 	context.Topic = profile.lastcompletedtopic;
 	context.Subtopic = profile.lastcompletedsubtopic;
 	context.Topic_Completion =profile.completedtopics;
+	
+//	context.Last_Meeting_Date = profile.lastLoginDay;
+//	context.Last_Meeting_Days = today - lastLoginDay;
+	
 	if(profile.topicInprogress == undefined){
 		context.In_Progress = "";
 	}else{
