@@ -46,6 +46,8 @@ exports.authenticate = function(res, details, callback){
 					res_body.loginCount = 1;
 				}
 				res_body.lastlogin = currentDate;
+				res_body.id = res_body._id;
+				console.log(res_body);
 				var res;
 			    exports.updateUserProfile(res, res_body, function(updateUserResp){});
 			}
@@ -133,6 +135,9 @@ exports.updateUserProfile = function(res, details, callback){
 			}
 			if(details.loginCount != undefined){
 				profile.loginCount = details.loginCount;
+			}
+			if(details.lastlogin != undefined){
+				profile.lastlogin = details.lastlogin;
 			}
 			
 			request({
