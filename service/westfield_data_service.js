@@ -38,18 +38,19 @@ exports.authenticate = function(res, details, callback){
 				"message": "User not found with username and password combination"
 			});
 		}else{
-			if(res_body._id != undefined){
+			if(res_body.docs != undefined && res_body.docs.length > 0){
+				var updateRequestBody = {};
 				var currentDate = moment(new Date()).format('MM/DD/YY');
-				if(res_body.loginCount != undefined){
-					res_body.loginCount = res_body.loginCount + 1;
+				if(res_body.docs[0].loginCount != undefined){
+					updateRequestBody.loginCount = res_body.docs[0].loginCount + 1;
 				}else{
-					res_body.loginCount = 1;
+					updateRequestBody.loginCount = 1;
 				}
-				res_body.lastlogin = currentDate;
-				res_body.id = res_body._id;
-				console.log(res_body);
+				updateRequestBody.lastlogin = currentDate;
+				updateRequestBody.id = res_body._id;
+				console.log("Added login data " + updateRequestBody);
 				var res;
-			    exports.updateUserProfile(res, res_body, function(updateUserResp){});
+			    exports.updateUserProfile(res, updateRequestBody, function(updateUserResp){});
 			}
 			callback(res_body);
 		}
