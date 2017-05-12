@@ -844,6 +844,8 @@ function doWatsonConversation2(props, callback){
 	context.Fault_Rating = profile.claimfaultrating;
 //
 
+//this is a test ---------------------------------------------------------------
+
 	extractName(context, temp_msg, function(resp){
 		if(resp.User_First_Name != undefined){
 			context.User_First_Name = resp.User_First_Name;
