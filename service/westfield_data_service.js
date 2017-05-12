@@ -653,7 +653,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 				Promise.all([p1,p2,p3]).then(function(results){
 					//console.log(results);
 					//console.log("this is props" + props);
-					doWatsonConversation(props,function(conversationResp){
+					doWatsonConversation2(props,function(conversationResp){
 						callback(conversationResp);
 					});
 				}).catch(function (error) { 
@@ -661,7 +661,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 					callback(error);
 				});
 			}else{
-				doWatsonConvers(props,function(conversationResp){
+				doWatsonConversation2(props,function(conversationResp){
 					callback(conversationResp);
 				});
 			}
