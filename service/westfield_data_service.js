@@ -700,7 +700,7 @@ function doWatsonConversation(props, callback){
 	//console.log(props);
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "0fd5363e-9732-456e-8263-587f1a8f8036";
+	workspace_id = "0ddcc576-930f-4346-812b-17451784310d";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 		var test  = JSON.stringify(props.payload.context);
