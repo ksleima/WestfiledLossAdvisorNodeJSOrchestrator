@@ -168,9 +168,9 @@ exports.updateUserProfile = function(res, details, callback){
 
 exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationDate, callback){
 
-//	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber;
-	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
-	console.log(uri);
+//	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
+	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicyProd?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
+
 	request({
 		method: 'GET',
 		uri: uri
@@ -335,8 +335,8 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 
 exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verificationDate, callback){
 
-//	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendor?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber;
-	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendor?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
+//	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendor?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
+	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendorProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
 
 	request({
 		method: 'GET',
@@ -450,7 +450,8 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 
 exports.westfieldClaimService = function(res, claimNumber, callback){
 
-	var uri ="https://nodered-westfield.mybluemix.net/SimpleServlet?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
+//	var uri ="https://nodered-westfield.mybluemix.net/SimpleServlet?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
+	var uri ="https://nodered-westfield.mybluemix.net/SimpleServletProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
 	request({
 		method: 'GET',
 		uri: uri
