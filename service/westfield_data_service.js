@@ -383,9 +383,12 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							for (i = 0; i < finServAgreementComponents.length; i++) {
 							   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].type[0].name[0] == "Vehicle"){
 								   vehicles = vehicles + 1;
+								   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TD" ||
+											finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TO"){
+								   }
 							   }
 							}
-
+							
 							var rolesInFinServAgreement = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"];
 							var birthdateString;
 							var today = new Date();
