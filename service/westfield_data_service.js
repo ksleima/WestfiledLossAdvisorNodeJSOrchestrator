@@ -317,6 +317,12 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 			industryterm = naicscodesObject.naicsmapping[i].industryterm;
 			skilltradebusiness = naicscodesObject.naicsmapping[i].skilltradebusiness;
 		}
+		if("23611" == naicscode.substring(0,5)){
+			businessdescriptionsingular = "Residential Building Contractor";
+			businessdescriptionplural = "Residential Building Contractors";
+			industryterm = "Residential Building";
+			skilltradebusiness = "Residential Building Construction Business";
+		}
 	}
 
 	var msg = {};
