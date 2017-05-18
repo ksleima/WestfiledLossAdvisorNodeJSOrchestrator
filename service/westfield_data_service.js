@@ -7,7 +7,8 @@ const WestFieldCache = new NodeCache({ stdTTL: 0, checkperiod: 0 });
 var moment = require('moment');
 
 
-var dburl = "https://94e3255e-7d4b-46c2-9bc2-50592b9fb06b-bluemix.cloudant.com";
+var dburl = process.env.CLOUDANT_DB_URL;
+var WORKSPACE_ID = process.env.WORKSPACE_ID;
 
 var states = [    {        "name": "Alabama",        "abbreviation": "AL"    },    {        "name": "Alaska",        "abbreviation": "AK"    },    {        "name": "American Samoa",        "abbreviation": "AS"    },    {        "name": "Arizona",        "abbreviation": "AZ"    },    {        "name": "Arkansas",        "abbreviation": "AR"    },    {        "name": "California",        "abbreviation": "CA"    },    {        "name": "Colorado",        "abbreviation": "CO"    },    {        "name": "Connecticut",        "abbreviation": "CT"    },    {        "name": "Delaware",        "abbreviation": "DE"    },    {        "name": "District Of Columbia",        "abbreviation": "DC"    },    {        "name": "Federated States Of Micronesia",        "abbreviation": "FM"    },    {        "name": "Florida",        "abbreviation": "FL"    },    {        "name": "Georgia",        "abbreviation": "GA"    },    {        "name": "Guam",        "abbreviation": "GU"    },    {        "name": "Hawaii",        "abbreviation": "HI"    },    {        "name": "Idaho",        "abbreviation": "ID"    },    {        "name": "Illinois",        "abbreviation": "IL"    },    {        "name": "Indiana",        "abbreviation": "IN"    },    {        "name": "Iowa",        "abbreviation": "IA"    },    {        "name": "Kansas",        "abbreviation": "KS"    },    {        "name": "Kentucky",        "abbreviation": "KY"    },    {        "name": "Louisiana",        "abbreviation": "LA"    },    {        "name": "Maine",        "abbreviation": "ME"    },    {        "name": "Marshall Islands",        "abbreviation": "MH"    },    {        "name": "Maryland",        "abbreviation": "MD"    },    {        "name": "Massachusetts",        "abbreviation": "MA"    },    {        "name": "Michigan",        "abbreviation": "MI"    },    {        "name": "Minnesota",        "abbreviation": "MN"    },    {        "name": "Mississippi",        "abbreviation": "MS"    },    {        "name": "Missouri",        "abbreviation": "MO"    },    {        "name": "Montana",        "abbreviation": "MT"    },    {        "name": "Nebraska",        "abbreviation": "NE"    },    {        "name": "Nevada",        "abbreviation": "NV"    },    {        "name": "New Hampshire",        "abbreviation": "NH"    },    {        "name": "New Jersey",        "abbreviation": "NJ"    },    {        "name": "New Mexico",        "abbreviation": "NM"    },    {        "name": "New York",        "abbreviation": "NY"    },    {        "name": "North Carolina",        "abbreviation": "NC"    },    {        "name": "North Dakota",        "abbreviation": "ND"    },    {        "name": "Northern Mariana Islands",        "abbreviation": "MP"    },    {        "name": "Ohio",        "abbreviation": "OH"    },    {        "name": "Oklahoma",        "abbreviation": "OK"    },    {        "name": "Oregon",        "abbreviation": "OR"    },    {        "name": "Palau",        "abbreviation": "PW"    },    {        "name": "Pennsylvania",        "abbreviation": "PA"    },    {        "name": "Puerto Rico",        "abbreviation": "PR"    },    {        "name": "Rhode Island",        "abbreviation": "RI"    },    {        "name": "South Carolina",        "abbreviation": "SC"    },    {        "name": "South Dakota",        "abbreviation": "SD"    },    {        "name": "Tennessee",        "abbreviation": "TN"    },    {        "name": "Texas",        "abbreviation": "TX"    },    {        "name": "Utah",        "abbreviation": "UT"    },    {        "name": "Vermont",        "abbreviation": "VT"    },    {        "name": "Virgin Islands",        "abbreviation": "VI"    },    {        "name": "Virginia",        "abbreviation": "VA"    },    {        "name": "Washington",        "abbreviation": "WA"    },    {        "name": "West Virginia",        "abbreviation": "WV"    },    {        "name": "Wisconsin",        "abbreviation": "WI"    },    {        "name": "Wyoming",        "abbreviation": "WY"    }];
 
@@ -60,7 +61,6 @@ exports.authenticate = function(res, details, callback){
 
 
 exports.getUserProfile = function(res, id, callback){
-	
 	var uri = dburl+"/userprofile/"+id;
 	//console.log(uri);
 	request({
@@ -710,7 +710,7 @@ function doWatsonConversation(props, callback){
 	//console.log(props);
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "0ddcc576-930f-4346-812b-17451784310d";
+	//workspace_id = "0ddcc576-930f-4346-812b-17451784310d";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 		var test  = JSON.stringify(props.payload.context);
@@ -791,7 +791,7 @@ function doWatsonConversation(props, callback){
 		conversation.message({
 		  context : context,
 		  input: { text: temp_msg },
-		  workspace_id: workspace_id
+		  workspace_id: WORKSPACE_ID
 		 }, function(err, res_body)  {
 			 if (err != null || res_body.output == null || res_body.output == undefined) {
 			   console.error(err);
@@ -843,7 +843,7 @@ function doWatsonConversation2(props, callback){
 	console.log("Here in doWatsonConversation2");
 	var temp_msg = props.payload.input;
 	var username = profile.username;
-	workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
+	//workspace_id = "03754f9c-23fd-496d-86ac-132a510a38a7";
 	var context = JSON.parse("{}");
 	if (typeof(props.payload.context) != "undefined"){
 		var test  = JSON.stringify(props.payload.context);
@@ -927,7 +927,7 @@ function doWatsonConversation2(props, callback){
 		conversation.message({
 		  context : context,
 		  input: { text: temp_msg },
-		  workspace_id: workspace_id
+		  workspace_id: WORKSPACE_ID
 		 }, function(err, res_body)  {
 			 if (err != null || res_body.output == null || res_body.output == undefined) {
 			   console.error(err);
