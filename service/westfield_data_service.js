@@ -1119,7 +1119,8 @@ exports.resetUserprofile = function(res, details, callback){
 			}); 
 		}else{
 		
-			var profile;
+			var profile = res_body;
+			/*
 			try{
 				profile = JSON.parse(res_body);
 			}catch(err){
@@ -1130,7 +1131,7 @@ exports.resetUserprofile = function(res, details, callback){
 				});
 				return;
 			}
-			
+			*/
 			if(profile.docs.length <= 0 || profile.docs[0] == null || profile.docs[0] == undefined){
 				console.log("User Profile does not contain valid information");
 				callback({
