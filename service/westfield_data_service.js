@@ -10,6 +10,22 @@ var moment = require('moment');
 var dburl = process.env.CLOUDANT_DB_URL;
 var WORKSPACE_ID = process.env.WORKSPACE_ID;
 var WORKSPACE_ID2 = process.env.WORKSPACE_ID2;
+
+var CONVERSATION_USER1 = process.env.CONVERSATION_USER1;
+var CONVERSATION_PASS1 = process.env.CONVERSATION_PASS1;
+var CONVERSATION_VERSION_DATE1 = process.env.CONVERSATION_VERSION_DATE1;
+
+var CONVERSATION_USER2 = process.env.CONVERSATION_USER2;
+var CONVERSATION_PASS2 = process.env.CONVERSATION_PASS2;
+var CONVERSATION_VERSION_DATE2 = process.env.CONVERSATION_VERSION_DATE2;
+
+var NATURAL_LANGUAGE_UNDERSTANDING_USER = process.env.NATURAL_LANGUAGE_UNDERSTANDING_USER;
+var NATURAL_LANGUAGE_UNDERSTANDING_PASS = process.env.NATURAL_LANGUAGE_UNDERSTANDING_PASS;
+var NATURAL_LANGUAGE_UNDERSTANDING_DATE = process.env.NATURAL_LANGUAGE_UNDERSTANDING_DATE;
+
+var SERVICE_TOKEN = process.env.SERVICE_TOKEN;
+var WESTFIELD_SERVLET_SERVICE_HOST = process.env.WESTFIELD_SERVLET_SERVICE_HOST;
+
 var states = [    {        "name": "Alabama",        "abbreviation": "AL"    },    {        "name": "Alaska",        "abbreviation": "AK"    },    {        "name": "American Samoa",        "abbreviation": "AS"    },    {        "name": "Arizona",        "abbreviation": "AZ"    },    {        "name": "Arkansas",        "abbreviation": "AR"    },    {        "name": "California",        "abbreviation": "CA"    },    {        "name": "Colorado",        "abbreviation": "CO"    },    {        "name": "Connecticut",        "abbreviation": "CT"    },    {        "name": "Delaware",        "abbreviation": "DE"    },    {        "name": "District Of Columbia",        "abbreviation": "DC"    },    {        "name": "Federated States Of Micronesia",        "abbreviation": "FM"    },    {        "name": "Florida",        "abbreviation": "FL"    },    {        "name": "Georgia",        "abbreviation": "GA"    },    {        "name": "Guam",        "abbreviation": "GU"    },    {        "name": "Hawaii",        "abbreviation": "HI"    },    {        "name": "Idaho",        "abbreviation": "ID"    },    {        "name": "Illinois",        "abbreviation": "IL"    },    {        "name": "Indiana",        "abbreviation": "IN"    },    {        "name": "Iowa",        "abbreviation": "IA"    },    {        "name": "Kansas",        "abbreviation": "KS"    },    {        "name": "Kentucky",        "abbreviation": "KY"    },    {        "name": "Louisiana",        "abbreviation": "LA"    },    {        "name": "Maine",        "abbreviation": "ME"    },    {        "name": "Marshall Islands",        "abbreviation": "MH"    },    {        "name": "Maryland",        "abbreviation": "MD"    },    {        "name": "Massachusetts",        "abbreviation": "MA"    },    {        "name": "Michigan",        "abbreviation": "MI"    },    {        "name": "Minnesota",        "abbreviation": "MN"    },    {        "name": "Mississippi",        "abbreviation": "MS"    },    {        "name": "Missouri",        "abbreviation": "MO"    },    {        "name": "Montana",        "abbreviation": "MT"    },    {        "name": "Nebraska",        "abbreviation": "NE"    },    {        "name": "Nevada",        "abbreviation": "NV"    },    {        "name": "New Hampshire",        "abbreviation": "NH"    },    {        "name": "New Jersey",        "abbreviation": "NJ"    },    {        "name": "New Mexico",        "abbreviation": "NM"    },    {        "name": "New York",        "abbreviation": "NY"    },    {        "name": "North Carolina",        "abbreviation": "NC"    },    {        "name": "North Dakota",        "abbreviation": "ND"    },    {        "name": "Northern Mariana Islands",        "abbreviation": "MP"    },    {        "name": "Ohio",        "abbreviation": "OH"    },    {        "name": "Oklahoma",        "abbreviation": "OK"    },    {        "name": "Oregon",        "abbreviation": "OR"    },    {        "name": "Palau",        "abbreviation": "PW"    },    {        "name": "Pennsylvania",        "abbreviation": "PA"    },    {        "name": "Puerto Rico",        "abbreviation": "PR"    },    {        "name": "Rhode Island",        "abbreviation": "RI"    },    {        "name": "South Carolina",        "abbreviation": "SC"    },    {        "name": "South Dakota",        "abbreviation": "SD"    },    {        "name": "Tennessee",        "abbreviation": "TN"    },    {        "name": "Texas",        "abbreviation": "TX"    },    {        "name": "Utah",        "abbreviation": "UT"    },    {        "name": "Vermont",        "abbreviation": "VT"    },    {        "name": "Virgin Islands",        "abbreviation": "VI"    },    {        "name": "Virginia",        "abbreviation": "VA"    },    {        "name": "Washington",        "abbreviation": "WA"    },    {        "name": "West Virginia",        "abbreviation": "WV"    },    {        "name": "Wisconsin",        "abbreviation": "WI"    },    {        "name": "Wyoming",        "abbreviation": "WY"    }];
 
 exports.authenticate = function(res, details, callback){
@@ -169,8 +185,13 @@ exports.updateUserProfile = function(res, details, callback){
 exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationDate, callback){
 
 //	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
-	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicyProd?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
-
+	//var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicyProd?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
+	
+	var InsuredRolesForPolicy_PATH = process.env.InsuredRolesForPolicy_PATH;
+	var InsuredRolesForPolicy_ID = process.env.InsuredRolesForPolicy_ID;
+	var uri = WESTFIELD_SERVLET_SERVICE_HOST+InsuredRolesForPolicy_PATH+"?token="+SERVICE_TOKEN+"&id="+InsuredRolesForPolicy_ID+"&policyNumber="+ policyNumber + "&verificationDate=" + verificationDate
+	console.log(uri);
+	
 	request({
 		method: 'GET',
 		uri: uri
@@ -342,8 +363,12 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verificationDate, callback){
 
 //	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendor?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
-	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendorProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
+	//var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendorProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
 
+	var policyDetailsForVendor_PATH = process.env.policyDetailsForVendor_PATH;
+	var policyDetailsForVendor_ID = process.env.policyDetailsForVendor_ID;
+	var uri = WESTFIELD_SERVLET_SERVICE_HOST+policyDetailsForVendor_PATH+"?token="+SERVICE_TOKEN+"&id="+policyDetailsForVendor_ID+"&policyNumber="+ policyNumber + "&verificationDate=" + verificationDate
+	console.log(uri);
 	request({
 		method: 'GET',
 		uri: uri
@@ -457,7 +482,13 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 exports.westfieldClaimService = function(res, claimNumber, callback){
 
 //	var uri ="https://nodered-westfield.mybluemix.net/SimpleServlet?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
-	var uri ="https://nodered-westfield.mybluemix.net/SimpleServletProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
+	//var uri ="https://nodered-westfield.mybluemix.net/SimpleServletProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
+	
+	var SimpleServlet_PATH = process.env.SimpleServlet_PATH;
+	var SimpleServlet_ID = process.env.SimpleServlet_ID;
+	var uri = WESTFIELD_SERVLET_SERVICE_HOST+SimpleServlet_PATH+"?token="+SERVICE_TOKEN+"&id="+SimpleServlet_ID+"&claimNumber="+ claimNumber;
+	console.log(uri);
+	
 	request({
 		method: 'GET',
 		uri: uri
@@ -783,9 +814,9 @@ function doWatsonConversation(props, callback){
 		var ConversationV1 = require('watson-developer-cloud/conversation/v1');
 	 
 		var conversation = new ConversationV1({
-		  username: 'cc11f6ea-6f0a-4081-a364-ee65accea693',
-		  password: '7aHZsqccYiuR',
-		  version_date: '2017-04-21'
+		  username: CONVERSATION_USER1,
+		  password: CONVERSATION_PASS1,
+		  version_date: CONVERSATION_VERSION_DATE1
 		});
 		
 		conversation.message({
@@ -918,9 +949,9 @@ function doWatsonConversation2(props, callback){
 		var ConversationV1 = require('watson-developer-cloud/conversation/v1');
 	 
 		var conversation = new ConversationV1({
-		  username: 'a5ec5e9a-ea00-48e8-ab74-a4c24339af13',
-		  password: '1kwj1PuJcc1a',
-		  version_date: '2017-04-21'
+		  username: CONVERSATION_USER2,
+		  password: CONVERSATION_PASS2,
+		  version_date: CONVERSATION_VERSION_DATE2
 		});
 		
 		conversation.message({
@@ -975,9 +1006,9 @@ function extractName (context, input, callback){
 	 console.log("variable value is " + context.Extract_Name);
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 		var natural_language_understanding = new NaturalLanguageUnderstandingV1({
-		  'username': '4a58f828-408e-4eb8-a57e-71726f30c139',
-		  'password': 'xaE2Qld70v2g',
-		  'version_date': '2017-02-27'
+		  'username': NATURAL_LANGUAGE_UNDERSTANDING_USER,
+		  'password': NATURAL_LANGUAGE_UNDERSTANDING_PASS,
+		  'version_date': NATURAL_LANGUAGE_UNDERSTANDING_DATE
 		});
 		var parameters = {
 		  'text': input,
