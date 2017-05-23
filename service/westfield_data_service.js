@@ -227,12 +227,12 @@ exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationD
 									var naicscodes;
 									if( err == null ){
 										if(value == undefined){
-											console.log("NAICS valu is not present in cache");
+											console.log("NAICS value is not present in cache");
 											fetchNaicsCodesAndAnalyzeResult(result,function(resp){
 												callback(resp);
 											});
 										}else{
-											console.log("Fetching NAICS value from chache");
+											console.log("Fetching NAICS value from cache");
 											console.log( value );
 											naicscodes = value;
 											prepareResponseDataForInsuredRoles(naicscodes,result, function(resp){
@@ -408,6 +408,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							//var namedinsured = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"][0]["party"][0]["allNames"][0]["fullName"][0]
 							var namedinsured = "";
 							var agency = "";
+							var hasTrailers = 0;
 
 							var finServAgreementComponents = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["financialServicesAgreementComponents"];
 
@@ -416,6 +417,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   vehicles = vehicles + 1;
 								   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TD" ||
 											finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TO"){
+											hasTrailers = 1;
 								   }
 							   }
 							}
@@ -457,7 +459,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								"numberOfVehicles" : vehicles,
 								"numberOfDrivers" : drivers,
 								"driversUnder25" : driverslessthan25,
-								"hasTrailers" : "0"
+								"hasTrailers" : hasTrailers
 							};
 							callback(msg);
 						}
@@ -801,7 +803,7 @@ function doWatsonConversation(props, callback){
 			context.Extract_Name  = "No";
 			
 			//context.DriversUnder25 =flow.get('driversUnder25');
-			context.DriversUnder25 ="0";
+			context.DriversUnder25 = props.driversUnder25;
 			
 			context.Business_Desc_Sing = props.businessdescriptionsingular;
 			context.Business_Desc_Plural = props.businessdescriptionplural;
@@ -942,7 +944,7 @@ function doWatsonConversation2(props, callback){
 			context.Extract_Name  = "No";
 			
 			//context.DriversUnder25 =flow.get('driversUnder25');
-			context.DriversUnder25 ="0";
+			context.DriversUnder25 = props.driversUnder25;
 			
 			context.Business_Desc_Sing = props.businessdescriptionsingular;
 			context.Business_Desc_Plural = props.businessdescriptionplural;
