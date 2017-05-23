@@ -749,7 +749,7 @@ function doWatsonConversation(props, callback){
 		var test  = JSON.stringify(props.payload.context);
 		if (test.length > 2) {
 			try{
-				console.log("This is the context string" + test);
+				console.log("This is the context string sent from app " + test);
 				context = JSON.parse(props.payload.context);
 			}catch(err){
 				console.error(err);
@@ -789,7 +789,7 @@ function doWatsonConversation(props, callback){
 		if(resp.User_First_Name != undefined){
 			context.User_First_Name = resp.User_First_Name;
 			context.Extract_Name = resp.Extract_Name;
-			console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
+			console.log("extractName returned " + context.User_First_Name + " " + context.Extract_Name);
 		}
 		if(temp_msg == "-1"){
 			context.Named_Insured = props.namedInsured;
@@ -838,9 +838,9 @@ function doWatsonConversation(props, callback){
 			 } else {
 			  props.payload = temp_msg;
 			  var Watson_response = JSON.stringify(res_body.output.text);
-			  console.log(Watson_response);
+			  console.log("WCS returned text " + Watson_response);
 			  var Watson_context = JSON.stringify(res_body.context);
-			  console.log(Watson_context);
+			  console.log("WCS returned context " + Watson_context);
 			  var watsonResp = {
 						text: Watson_response.substring(2,Watson_response.length-2),
 						username: "Watson",
@@ -929,7 +929,7 @@ function doWatsonConversation2(props, callback){
 		if(resp.User_First_Name != undefined){
 			context.User_First_Name = resp.User_First_Name;
 			context.Extract_Name = resp.Extract_Name;
-			console.log("returned context " + context.User_First_Name + " " + context.Extract_Name);
+			console.log("extract name returned " + context.User_First_Name + " " + context.Extract_Name);
 		}
 		
 		if(temp_msg == "-1"){
@@ -976,9 +976,9 @@ function doWatsonConversation2(props, callback){
 			 } else {
 			  props.payload = temp_msg;
 			  var Watson_response = JSON.stringify(res_body.output.text);
-			  console.log(Watson_response);
+			  console.log("WCS returned text " + Watson_response);
 			  var Watson_context = JSON.stringify(res_body.context);
-			  console.log(Watson_context);
+			  console.log("WCS returned context " + Watson_context);
 			  var watsonResp = {
 						text: Watson_response.substring(2,Watson_response.length-2),
 						username: "Watson",
@@ -1009,9 +1009,9 @@ function doWatsonConversation2(props, callback){
 }
 
 function extractName (context, input, callback){
-	console.log("in extractName");
+	//console.log("in extractName");
 	if(context.Extract_Name != undefined && context.Extract_Name == "Yes"){
-	 console.log("variable value is " + context.Extract_Name);
+	 console.log("context.Extract_Name is " + context.Extract_Name);
 		var NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
 		var natural_language_understanding = new NaturalLanguageUnderstandingV1({
 		  'username': NATURAL_LANGUAGE_UNDERSTANDING_USER,
@@ -1041,10 +1041,10 @@ function extractName (context, input, callback){
 		  }
 		  else{
 		    var foundname = 0;
-			console.log(JSON.stringify(response, null, 2));
+			console.log("NLU Response " + JSON.stringify(response, null, 2));
 			for(i=0; i < response.entities.length; i++){
 				if(foundname == 0 && response.entities[i].type == "Person"){
-					console.log("first name: " + response.entities[i].text);
+					console.log("Extract name, first name: " + response.entities[i].text);
 					foundname = 1;
 					UserFirstName  = response.entities[i].text;
 				}
@@ -1066,7 +1066,7 @@ function extractName (context, input, callback){
 		});
 		context.Extract_Name = "No";
 		//context.User_First_Name = UserFirstName;
-		console.log("context first name should be updated " + context.User_First_Name);
+		console.log("In Extract Name, context first name should be updated " + context.User_First_Name);
 	}else{
 		callback({});
 	}
