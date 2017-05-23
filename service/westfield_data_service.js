@@ -819,6 +819,9 @@ function doWatsonConversation(props, callback){
 		  version_date: CONVERSATION_VERSION_DATE1
 		});
 		
+		
+		// here , saveconversation (temp_msg, profileId, context, to=WATSON, from = user first name)
+		
 		conversation.message({
 		  context : context,
 		  input: { text: temp_msg },
@@ -841,6 +844,9 @@ function doWatsonConversation(props, callback){
 						username: "Watson",
 						context: Watson_context
 			  };
+			  
+			  // here , saveconversation (Watson_response.substring(2,Watson_response.length-2), Watson_context, profileId, to=user first name, from = WATSON)
+			  
 			  var updateUserProfileRequestBody = {};
 			  updateUserProfileRequestBody = profile;
 			  updateUserProfileRequestBody.preferredfirstname = res_body.context.User_First_Name;
