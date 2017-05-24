@@ -821,7 +821,8 @@ function doWatsonConversation(props, callback){
 		conversationDetails.from = profile.preferredfirstname
 		conversationDetails.context = context;
 		// here , saveconversation (temp_msg, profileId, context, to=WATSON, from = user first name)
-		exports.saveConversationMessage(res, conversationDetails, function(resp){
+		var res1;
+		exports.saveConversationMessage(res1, conversationDetails, function(resp){
 			console.log(resp);
 		});
 		
@@ -849,13 +850,14 @@ function doWatsonConversation(props, callback){
 			  };
 			  
 				var watsonRsponseDetails={};
+				var res2;
 				watsonRsponseDetails.input = watsonResp.text;
 				watsonRsponseDetails.profileId = profile._id;
 				watsonRsponseDetails.to = profile.preferredfirstname;
 				watsonRsponseDetails.from = 'WATSON';
 				watsonRsponseDetails.context = Watson_context;
 			  // here , saveconversation (Watson_response.substring(2,Watson_response.length-2), Watson_context, profileId, to=user first name, from = WATSON)
-				exports.saveConversationMessage(res, watsonRsponseDetails, function(resp){
+				exports.saveConversationMessage(res2, watsonRsponseDetails, function(resp){
 					console.log(resp);
 				});
 			  
