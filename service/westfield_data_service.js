@@ -183,9 +183,6 @@ exports.updateUserProfile = function(res, details, callback){
 }
 
 exports.retreiveInsuredRolesForPolicy = function(res, policyNumber,verificationDate, callback){
-
-//	var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicy?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
-	//var uri ="https://nodered-westfield.mybluemix.net/InsuredRolesForPolicyProd?token=5531999940875&id=NVDMV-2011-04-20-9:31:00:000000&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;	
 	
 	var InsuredRolesForPolicy_PATH = process.env.InsuredRolesForPolicy_PATH;
 	var InsuredRolesForPolicy_ID = process.env.InsuredRolesForPolicy_ID;
@@ -362,9 +359,6 @@ function prepareResponseDataForInsuredRoles(naicscodes,result,callback){
 
 exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verificationDate, callback){
 
-//	var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendor?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
-	//var uri ="https://nodered-westfield.mybluemix.net/policyDetailsForVendorProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&policyNumber=" + policyNumber + "&verificationDate=" + verificationDate;
-
 	var policyDetailsForVendor_PATH = process.env.policyDetailsForVendor_PATH;
 	var policyDetailsForVendor_ID = process.env.policyDetailsForVendor_ID;
 	var uri = WESTFIELD_SERVLET_SERVICE_HOST+policyDetailsForVendor_PATH+"?token="+SERVICE_TOKEN+"&id="+policyDetailsForVendor_ID+"&policyNumber="+ policyNumber + "&verificationDate=" + verificationDate
@@ -413,7 +407,9 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							var finServAgreementComponents = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["financialServicesAgreementComponents"];
 
 							for (i = 0; i < finServAgreementComponents.length; i++) {
-							   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].type[0].name[0] == "Vehicle"){
+							   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].type[0].name[0] == "Vehicle"
+									&& finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] != "CX"
+							   ){
 								   vehicles = vehicles + 1;
 								   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TD" ||
 											finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TO"){
@@ -481,11 +477,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 }
 
 
-exports.westfieldClaimService = function(res, claimNumber, callback){
-
-//	var uri ="https://nodered-westfield.mybluemix.net/SimpleServlet?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
-	//var uri ="https://nodered-westfield.mybluemix.net/SimpleServletProd?token=5531999940875&id=e562a47f-bfb3-4b74-a641-af5336591652&claimNumber=" + claimNumber;
-	
+exports.westfieldClaimService = function(res, claimNumber, callback){	
 	var SimpleServlet_PATH = process.env.SimpleServlet_PATH;
 	var SimpleServlet_ID = process.env.SimpleServlet_ID;
 	var uri = WESTFIELD_SERVLET_SERVICE_HOST+SimpleServlet_PATH+"?token="+SERVICE_TOKEN+"&id="+SimpleServlet_ID+"&claimNumber="+ claimNumber;
@@ -822,7 +814,16 @@ function doWatsonConversation(props, callback){
 		});
 		
 		
+		var conversationDetails={};
+		conversationDetails.input = temp_msg;
+		conversationDetails.profileId = profile._id;
+		conversationDetails.to = 'WATSON';
+		conversationDetails.from = profile.preferredfirstname
+		conversationDetails.context = context;
 		// here , saveconversation (temp_msg, profileId, context, to=WATSON, from = user first name)
+		exports.saveConversationMessage(res, conversationDetails, function(resp){
+			console.log(resp);
+		});
 		
 		conversation.message({
 		  context : context,
@@ -847,7 +848,16 @@ function doWatsonConversation(props, callback){
 						context: Watson_context
 			  };
 			  
+				var watsonRsponseDetails={};
+				watsonRsponseDetails.input = watsonResp.text;
+				watsonRsponseDetails.profileId = profile._id;
+				watsonRsponseDetails.to = profile.preferredfirstname;
+				watsonRsponseDetails.from = 'WATSON';
+				watsonRsponseDetails.context = Watson_context;
 			  // here , saveconversation (Watson_response.substring(2,Watson_response.length-2), Watson_context, profileId, to=user first name, from = WATSON)
+				exports.saveConversationMessage(res, watsonRsponseDetails, function(resp){
+					console.log(resp);
+				});
 			  
 			  var updateUserProfileRequestBody = {};
 			  updateUserProfileRequestBody = profile;
