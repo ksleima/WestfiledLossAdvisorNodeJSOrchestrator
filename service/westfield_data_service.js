@@ -414,7 +414,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TD" ||
 											finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] == "TO"){
 											hasTrailers = 1;
-											vehicles = vehicles - 1;
+											//vehicles = vehicles - 1;
 								   }
 							   }
 							}
