@@ -824,7 +824,7 @@ function doWatsonConversation(props, callback){
 		exports.saveConversationMessage(res1, conversationDetails, function(resp){
 			console.log(resp);
 		});
-		*/
+		
 		conversation.message({
 		  context : context,
 		  input: { text: temp_msg },
