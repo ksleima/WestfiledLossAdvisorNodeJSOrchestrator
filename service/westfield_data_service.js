@@ -813,7 +813,7 @@ function doWatsonConversation(props, callback){
 		  version_date: CONVERSATION_VERSION_DATE1
 		});
 		
-		
+		/*
 		var conversationDetails={};
 		conversationDetails.input = temp_msg;
 		conversationDetails.profileId = profile._id;
@@ -825,7 +825,7 @@ function doWatsonConversation(props, callback){
 		exports.saveConversationMessage(res1, conversationDetails, function(resp){
 			console.log(resp);
 		});
-		
+		*/
 		conversation.message({
 		  context : context,
 		  input: { text: temp_msg },
@@ -849,7 +849,7 @@ function doWatsonConversation(props, callback){
 						context: Watson_context
 			  };
 			  
-				var watsonRsponseDetails={};
+			/*	var watsonRsponseDetails={};
 				var res2;
 				watsonRsponseDetails.input = watsonResp.text;
 				watsonRsponseDetails.profileId = profile._id;
@@ -860,6 +860,7 @@ function doWatsonConversation(props, callback){
 				exports.saveConversationMessage(res2, watsonRsponseDetails, function(resp){
 					console.log(resp);
 				});
+				*/
 			  
 			  var updateUserProfileRequestBody = {};
 			  updateUserProfileRequestBody = profile;
