@@ -813,14 +813,13 @@ function doWatsonConversation(props, callback){
 		  version_date: CONVERSATION_VERSION_DATE1
 		});
 		
-		/*
+		
 		var conversationDetails={};
 		conversationDetails.input = temp_msg;
 		conversationDetails.profileId = profile._id;
 		conversationDetails.to = 'WATSON';
-		conversationDetails.from = profile.preferredfirstname
-		conversationDetails.context = context;
-		// here , saveconversation (temp_msg, profileId, context, to=WATSON, from = user first name)
+		conversationDetails.from = profile.preferredfirstname;
+		conversationDetails.context = JSON.stringify(context);
 		var res1;
 		exports.saveConversationMessage(res1, conversationDetails, function(resp){
 			console.log(resp);
@@ -849,18 +848,17 @@ function doWatsonConversation(props, callback){
 						context: Watson_context
 			  };
 			  
-			/*	var watsonRsponseDetails={};
+				var watsonRsponseDetails={};
 				var res2;
 				watsonRsponseDetails.input = watsonResp.text;
 				watsonRsponseDetails.profileId = profile._id;
 				watsonRsponseDetails.to = profile.preferredfirstname;
 				watsonRsponseDetails.from = 'WATSON';
 				watsonRsponseDetails.context = Watson_context;
-			  // here , saveconversation (Watson_response.substring(2,Watson_response.length-2), Watson_context, profileId, to=user first name, from = WATSON)
 				exports.saveConversationMessage(res2, watsonRsponseDetails, function(resp){
 					console.log(resp);
 				});
-				*/
+			
 			  
 			  var updateUserProfileRequestBody = {};
 			  updateUserProfileRequestBody = profile;
