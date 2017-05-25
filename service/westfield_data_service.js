@@ -813,7 +813,7 @@ function doWatsonConversation(props, callback){
 		  version_date: CONVERSATION_VERSION_DATE1
 		});
 		
-		//test
+		
 		var conversationDetails={};
 		conversationDetails.input = temp_msg;
 		conversationDetails.profileId = profile._id;
