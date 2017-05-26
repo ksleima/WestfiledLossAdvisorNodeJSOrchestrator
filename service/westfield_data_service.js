@@ -433,6 +433,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   try{
 									   //birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
 									   birthdate = moment(birthdateString.substr(0,9), "YYYY-MM-DD");
+									   console.log("birthdate is " + birthdate);
 									  
 								   }catch(err){
 										console.error("Invalid birth date for user");
@@ -444,6 +445,8 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   }					
 								   var diffYears = today.diff(birthdate, 'years');
 								   //if(today.getYear()-birthdate.getYear() < 25){
+								   
+								   console.log("diff in years " + diffYears);
 								   if(diffYears < 25){
 									   driverslessthan25 = driverslessthan25 + 1;
 								   }
