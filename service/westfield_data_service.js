@@ -432,7 +432,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   birthdateString = party.birthDate[0];
 								   try{
 									   //birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
-									   birthdate = moment(birthdateString.substr(0,9), "YYYY-MM-DD");
+									   birthdate = moment(birthdateString.substr(0,	10), "YYYY-MM-DD");
 									   console.log("birthdate is " + birthdate);
 									  
 								   }catch(err){
