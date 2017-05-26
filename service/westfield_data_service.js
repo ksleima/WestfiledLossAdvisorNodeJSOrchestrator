@@ -680,6 +680,8 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							reject(policyDetails);
 						}else{
 							if(policyDetails.namedInsured != undefined){
+								props.namedInsured 		= policyDetails.namedInsured.replace(" &amp; ", " AND ");
+								props.namedInsured 		= props.namedInsured.replace("&amp;", " AND ");
 								props.namedInsured 		= policyDetails.namedInsured.replace(" & ", " AND ");
 								props.namedInsured 		= props.namedInsured.replace("&", " AND ");
 							}
@@ -687,6 +689,8 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
 							props.driversUnder25 	= policyDetails.driversUnder25;
 							if(policyDetails.agency != undefined){
+								props.agency 		= policyDetails.agency.replace(" &amp; ", " AND ");
+								props.agency 		= props.agency.replace("&amp;", " AND ");
 								props.agency 		= policyDetails.agency.replace(" & ", " AND ");
 								props.agency 		= props.agency.replace("&", " AND ");
 							}
