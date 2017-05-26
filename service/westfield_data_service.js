@@ -411,7 +411,8 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 									&& finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].vehicleTypeDescription[0] != "CX"
 							   ){
 								   
-								   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].makeModel[0].includes("TRAILER")){
+								   if(finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].modelSpecification[0].makeModel[0].includes("TRAILER")
+								   || finServAgreementComponents[i].rolesInFinancialServicesAgreement[0].coveredPhysicalObject[0].modelSpecification[0].makeModel[0].includes("TRLR")){
 										hasTrailers = 1;
 								   }else{
 										vehicles = vehicles + 1;
