@@ -422,7 +422,7 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 							
 							var rolesInFinServAgreement = result["soapenv:Envelope"]["soapenv:Body"][0]["RetrievePolicyDetailsForVendorResponse"][0]["insurancePolicy"][0]["rolesInFinancialServicesAgreement"];
 							var birthdateString;
-							var today = new Date();
+							var today = moment(new Date());
 							//console.log(today);
 							var party;
 							for (j = 0; j < rolesInFinServAgreement.length; j++) {
@@ -431,7 +431,9 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 								   party = rolesInFinServAgreement[j].party[0];
 								   birthdateString = party.birthDate[0];
 								   try{
-									   birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
+									   //birthdate = new Date(Date.parse(birthdateString.substr(0,9)));
+									   birthdate = moment(birthdateString.substr(0,9), "YYYY-MM-DD");
+									  
 								   }catch(err){
 										console.error("Invalid birth date for user");
 										callback({
@@ -439,8 +441,10 @@ exports.retrievePolicyDetailsForVendor = function(res, policyNumber,verification
 											"message": "Invalid birth date for user"
 										});
 										return;
-								   }							   
-								   if(today.getYear()-birthdate.getYear() < 25){
+								   }					
+								   var diffYears = today.diff(birthdate, 'years');
+								   //if(today.getYear()-birthdate.getYear() < 25){
+								   if(diffYears < 25){
 									   driverslessthan25 = driverslessthan25 + 1;
 								   }
 							   }else if(rolesInFinServAgreement[j]["$"]["xsi:type"] == "Insured"){
