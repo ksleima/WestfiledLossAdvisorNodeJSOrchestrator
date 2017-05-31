@@ -592,6 +592,7 @@ exports.cognitiveOrchestrator = function(res,details,callback){
 								props.namedInsured 		= props.namedInsured.replace("&amp;", " AND ");
 								props.namedInsured 		= policyDetails.namedInsured.replace(" & ", " AND ");
 								props.namedInsured 		= props.namedInsured.replace("&", " AND ");
+								props.namedInsured 		= props.namedInsured.replace(".", "");
 							}
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
@@ -690,6 +691,7 @@ exports.cognitiveOrchestrator2 = function(res,details,callback){
 								props.namedInsured 		= props.namedInsured.replace("&amp;", " AND ");
 								props.namedInsured 		= policyDetails.namedInsured.replace(" & ", " AND ");
 								props.namedInsured 		= props.namedInsured.replace("&", " AND ");
+								props.namedInsured 		= props.namedInsured.replace(".", "");
 							}
 							props.numberOfVehicles 	= policyDetails.numberOfVehicles;
 							props.numberOfDrivers 	= policyDetails.numberOfDrivers;
